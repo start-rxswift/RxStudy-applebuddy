@@ -12,7 +12,7 @@ RxSwift의 입문 공부 기록
 # 개요
 
 ✓ iOS 프로개발자이신 곰튀김님이 제공하는 RXSwift 4시간안에 끝내기 강의를 통해 RxSwift의 기본을 배우고 기록합니다.<br>
-✓  공부하는 RxSwift 지식을 붙여 기록합니다.
+✓ + 공부하는 RxSwift 지식을 붙여 기록합니다.
 
 <br>
 <br>
@@ -144,28 +144,25 @@ RxSwift의 입문 공부 기록
 <br>
 
 # 기타 유용한 RxSwift Library
-## RxDataSources : https://github.com/RxSwiftCommunity/RxDataSources
-### 테이블, 컬렉션 뷰의 RxdataSources
-### 기능 
-- 차이점 계산에 대한 0(N) 복잡도 알고리즘
-	- 해당 알고리즘은 모든 섹션 및 아이템들이 구체적이며 모호성이 없다고 가정 시 작동한다.
-	- 만약 모호성이 존재할 시 갱신 미동작 및 자동적으로 fallbacks(물러남) 처리된다.
-- 섹션으로 구성 된 뷰에 최소한의 명령을 보낼 수 있도록 추가적인 (휴리스틱)직관적 판단을 적용한다. 
-	- 비록 실행 시간은 선형으로 진행되지만, 전송되는 명령의 선호되는 갯수는 보통 선형보다 매우 적다.
-	* 휴리스틱 : 어떤 사안 또는 상황에 대해 엄밀한 분석에 의하기보다 제한된 정보만으로 즉흥적 · 직관적으로 판단 · 선택하는 의사결정 방식을 의미한다.
-	- 가능한 변경횟수를 적은 횟수로 제한하도록 선호된다. 만약 선형적으로 변경횟수가 증가하는 경우, 정상적인 리로드(Reload)를 수행하십시오.
-- 아이템과 섹션구조의 확장(Extending)을 제공한다.
-	- 당신의 아이템은 IdentifiableType, Equatable과 함께, 섹션은 AnimatableSectionModelType과 함께 확장할 수 있다.
-	...
-- Supports all combinations of two level hierarchical animations for both sections and items
-Section animations: Insert, Delete, Move
-Item animations: Insert, Delete, Move, Reload (if old value is not equal to new value)
- Configurable animation types for Insert, Reload and Delete (Automatic, Fade, ...)
- Example app
- Randomized stress tests (example app)
- Supports editing out of the box (example app)
- Works with UITableView and UICollectionView
- 
+### RxDataSources : https://github.com/RxSwiftCommunity/RxDataSources
+- 테이블, 컬렉션 뷰의 RxdataSources
+- **기능**
+	- 차이점 계산에 대한 0(N) 복잡도 알고리즘
+		- 해당 알고리즘은 모든 섹션 및 아이템들이 구체적이며 모호성이 없다고 가정 시 작동한다.
+		- 만약 모호성이 존재할 시 갱신 미동작 및 자동적으로 fallbacks(물러남) 처리된다.
+	- 섹션으로 구성 된 뷰에 최소한의 명령을 보낼 수 있도록 추가적인 (휴리스틱)직관적 판단을 적용한다. 
+		- 비록 실행 시간은 선형으로 진행되지만, 전송되는 명령의 선호되는 갯수는 보통 선형보다 매우 적다.
+		* 휴리스틱 : 어떤 사안 또는 상황에 대해 엄밀한 분석에 의하기보다 제한된 정보만으로 즉흥적 · 직관적으로 판단 · 선택하는 의사결정 방식을 의미한다.
+		- 가능한 변경횟수를 적은 횟수로 제한하도록 선호된다. 만약 선형적으로 변경횟수가 증가하는 경우, 정상적인 리로드(Reload)를 수행하십시오.
+	- 아이템과 섹션구조의 확장(Extending)을 제공한다.
+		- 당신의 아이템은 IdentifiableType, Equatable과 함께, 섹션은 AnimatableSectionModelType과 함께 확장할 수 있다.
+	- 섹션, 아이템을 위한 2단계로 계층적 애니메이션의 모든 조합들을 지원한다.
+		- 섹션 애니메이션 : Insert, Delete, Move
+		- 아이템 애니메이션 : Insert, Delete, Move, Reload (만약 이전값이 새로운 값과 다를 경우)
+	- 삽입, 리로드, 삭제 등을 위한 조작가능한 애니메이션 타입들(Automatic, Fade, ...
+	- 랜덤화된 스트레스 강도 테스트
+	- 즉시 사용가능한 편집을 지원
+	- UITableView, UICollectionView와 함께 동작
  
 ### RxOptional : .filterNil() 등을 사용하여 쉽게 옵셔널 데이터 처리가 가능하다.
 ### RxViewController :
