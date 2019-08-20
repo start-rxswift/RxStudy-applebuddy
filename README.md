@@ -119,6 +119,8 @@ RxSwift의 입문 공부 기록
 	- 해당 Subject가 종료 되면 이후 라는 스트림에서 Subscribe를 해도 해당 Subject는 종료된다.
 	✓ Bullet View만 상황을 지켜보다가 Enable or Disable 여부를 판단하여 변경할 수 있다.
 		* (value: false) -> default 값으로 false 설정을 했음을 의미
+		
+### - Behavior Replay : Behavior Wrapper로, 종료 시 Error, Completed를 동반하지 않는다.
 
 ### - Async Subject : 해당 Subject가 종료되는 시점의 맨 마지막 전달된 데이터를 SubScribe한 Stream들에 전달시킨다.
 
@@ -128,6 +130,8 @@ RxSwift의 입문 공부 기록
 ### - Replay Subject : 데이터가 생성되면 지금까지 생성했던 데이터를 한꺼번에 전달한다. "최초 Default값이 없다." 
 	- 마블 3개가 지나간 뒤 다른 Subscribe가 진행되면 해당 Stream에 이전 마블 3개를 전부 전달한다. 
 	- 이후 생성되는 데이터는 동일하게 모든 Stream에 전달된다.
+
+* Variable -> Deprecated
 
 ## Drive
 	// MainScheduler 등 명시 안하고 메인스레드로 돌려서 UI 등 처리할 수 있는 또 다른 방법 정도로 이해해두면 됨
