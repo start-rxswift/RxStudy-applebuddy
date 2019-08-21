@@ -28,6 +28,7 @@ RxSwift의 입문 공부 기록
 	- input이 들어온다 -> View가 반응한다. -> View가 아닌 ViewModel이 어떻게 처리할까 판단한다. -> Model에서 받아온다. 
 	- ViewMedel에서 UIKit 관련 UI와 관련되어지는 부분에 대해서 신경쓰고 관리해야 한다.
 	- ViewModel은 View에 종속되어선 안되며 재사용이 가능해야 잘 구현 된 ViewMedel이라 할 수 있다.
+<br>
 *<출처 : 밀쿄님 RxSwift 강좌>*
 
 <br>
@@ -196,7 +197,7 @@ RxSwift의 입문 공부 기록
 	 1) 클로져 내 [weak self]를 고려해야 한다.
 	 2) disposeBag = DisposeBag() 의 활용
 ### 그 외 주의사항
-- do(), subcribe() 사이드이펙트를 건드린다는 것을 명시하자. 
+- do(), subcribe() 사이드이펙트를 건드린다는 것을 명심해야한다. 
 	 
 <br>
 <br>
