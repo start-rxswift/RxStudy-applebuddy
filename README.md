@@ -23,6 +23,13 @@ RxSwift의 입문 공부 기록
 	* An API for asynchronous programming with observable streams
 	  ➣ 감시 스트림(Observable) 사용 비동기 프로그래밍을 위한 API
 
+### RxSwift와 함께하는 MVVM 패턴
+- **MVVM**
+	- input이 들어온다 -> View가 반응한다. -> View가 아닌 ViewModel이 어떻게 처리할까 판단한다. -> Model에서 받아온다. 
+	- ViewMedel에서 UIKit 관련 UI와 관련되어지는 부분에 대해서 신경쓰고 관리해야 한다.
+	- ViewModel은 View에 종속되어선 안되며 재사용이 가능해야 잘 구현 된 ViewMedel이라 할 수 있다.
+*<출처 : 밀쿄님 RxSwift 강좌>*
+
 <br>
 
 ## ReactiveX는 어디서 처음 만들었는가? 
@@ -163,6 +170,7 @@ RxSwift의 입문 공부 기록
 	- 랜덤화된 스트레스 강도 테스트
 	- 즉시 사용가능한 편집을 지원
 	- UITableView, UICollectionView와 함께 동작
+	- * DataBinding + SectionModel을 사용해야만 RxDataSource를 사용 할 수 있다.
  
 ### RxOptional : .filterNil() 등을 사용하여 쉽게 옵셔널 데이터 처리가 가능하다.
 ### RxViewController :
@@ -187,9 +195,13 @@ RxSwift의 입문 공부 기록
 	* 이로 인한 메모리 누수 방지를 위해 할 수 있는 방법
 	 1) 클로져 내 [weak self]를 고려해야 한다.
 	 2) disposeBag = DisposeBag() 의 활용
+### 그 외 주의사항
+- do(), subcribe() 사이드이펙트를 건드린다는 것을 명시하자. 
 	 
 <br>
 <br>
+
+
 
 # 결론
 ## 곰튀김님의 맺음말
