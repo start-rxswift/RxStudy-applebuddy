@@ -205,7 +205,7 @@ RxSwift의 입문 공부 기록
 
 
 # 결론
-## 곰튀김님의 맺음말
+## ♣︎ 곰튀김님의 맺음말
 	여러분들은 RxSwift를 4시간만에 끝내기는 커녕 3시간만에 끝내셨습니다(?)
 ### ✔︎ 굉장히 다양한 Operator 기능을 통한 활용성
 ### ✔︎ 커뮤니티가 활성화되어 있어 유용한 외부 라이브러리가 존재
@@ -213,6 +213,89 @@ RxSwift의 입문 공부 기록
 	
 #
 
+<br>
+<br>
 
+# 라이노님의 RxStudy 발표 내용 정리
+### '19. 08. 28.
 
 <br>
+
+## ♣︎ Operator란? 
+-Observable들을 다루는 메서드
+-Observable을 변환, 필터링, 합성하는 등 다양한 Operator가 존재한다. 
+원하는 만큼 연쇄적으로 제공 할 수 있다. 
+
+-Observable Class 가 연산자별 로 존재한다. 
+
+-실제 옵저바블이 creating 연산자를 만들면, 여러개의 연산자가 적용이 되면 서 
+구독을 할떄 마지막 옵저버블부터해서(역방향 순서) 차례대로 구독이 된다. ?
+
+-옵저버블의 이벤트 처리는 맨 처음 연산자 부터 순서대로(정방향 순서) 발생한다. 
+
+<br>
+
+## ♣︎ 생성 연산자
+### ➣ from : 컬렉션(배열 등)을 인자로 받아 해당 원소를 하나씩 이벤트로 내보내는 Observable을 만든다. 
+Ex)  [1,2,3] 배열이 있다 했을때… 
+=> 원소를 하나하나 빼가지고 이벤트를 흘려보낸다.
+
+### ➣ of : 한개이상의 인자를 받아 해당 원소를 하나씩 이번트로 내보낸다. 
+Ex) 가변인자를 받아서, “,”를 기준으로 이벤트를 흘려보낸다.
+
+### ➣ create : 커스텀 Observable을 만들때 사용한다. 
+- 이벤트를 지정 + onCompleted까지 직접 지정해주어야 한다. 
+  - -> 액션들에 대해 참조가 끊어지면 안되기에 참조 유지를 위해 Disposable객체를 생성해서 넘겨주고, DisposeBag에 넘겨 주어 참조를 유지? 
+- Return Disposables.create() 반환하여 Subscription과 연결, 참조를 유지시킨다. (Disposable.create()는 존재하지 않는다.)
+
+### ➣ deferred : 내부 조건에 따라 다른 결과를 만들 수 있다. 
+팩토리 클로저를 인자로 받아, 외부 조건에 따라 다른 Observable을 반환하도록 해준다. 
+
+<br>
+
+## 그 외 Operator
+
+### ➣ filter : 특정 조건을 충족하는 값만을 필터링 후 새로운 배열값을 반환한다.
+### ➣ debounce(디바운스) : 이벤트가 한번 발생한 뒤 일정 시간을 잰다. 
+- 재는 시간 사이에 다른 이벤트가 발생하지 않아야만 옵저바블을 넘긴다. 
+- 만약 재는 시간 중 다른 이벤트가 발생하면, 다른 이벤트 + debounce이벤트는 씹힌다.
+- UI 터치 등을 여러번이 아닌 한번만 감지해야 할때 등에 사용할 수 있다. 
+- SearchBar 검색 기능 등에도 여러번 검색 되지 않도록 사용할 수 있다. 
+
+### ➣ throttle : 특정 시간 간격 내 발생하는 이벤트 특정 시간 단위로 시간을 쟤며 체크, 체크 시점에 결과 무조건 방출
+~~~ swift
+// Timer.throttle(RxTimeInterval.seconds(2), latest: true, scheduler: 
+// MainScheduler.instance)….
+~~~
+- lastest 옵션이 true? 타이머가 끝나는 시점 발행 된 마지막 값을 가져온다. : 타이머가 끝난 후의 값을 가져온다. 
+  -이벤트가 발생하는 시간이 throttle에 떨어지는 시간이 끊어졌을때 그 마지막 값을 가져오는게 true, throttle로 방출하고 다음걸 방출할때 그 값을 가져온게 false
+
+### ➣ take
+- take(n): 요소의 앞부터 순서대로 특정 개수(n)의 값을 가져온다. 
+
+### ➣ skip
+- skip(n) : 요소 앞부터 특정 갯수를 제외한 값을 가져온다.
+
+### ➣ flatmap : 하나의 stream, observable을 반환
+-observable을 한 겹 벗겨내준다. (observable을 평평하게 만든다?)
+
+### ➣ flatmapLatest : 가장 마지막으로 추가된 순서의 Observable 이벤트만 subscribe한다.
+- switchLatest + map
+
+### ➣ switchLatest = flatmapLatest에서 map 기능이 빠진 것
+
+### ➣ merge : 나오는 대로 함치는 것 그냥 순수하게 두개를 합쳐버림
+
+### ➣ combineLatest : 받은 두 개의 Observable중 하나만 변경되면 가장 최근의 두 Observable들을 방출
+
+### ➣ zip : Observable이 방출하는 값들을 튜플로 묶어서 내보낸다. 만약 튜플로 묶을 수 없는 값은 버려진다. 
+
+### ➣ groupBy : 원소들을 특정 조건에 따라 그룹지어준다. 
+Observable -> groupedObservable
+
+### ➣ buffer : 특정 시간동안 시간이 다되거나 or Count로 요소의 갯수 제한, count만큼 갯수가 차면 방출
+
+### ➣ window : buffer와 기능은 동일하나 Observable로 나온다. 시간이 다되거나 or Count 만큼 Observable의 갯수가 차면 방출
+
+### ➣ startWith : 가변인자를 받아 onNext상황없이 Subscribe가 될때 원하는 값을 실행
+
