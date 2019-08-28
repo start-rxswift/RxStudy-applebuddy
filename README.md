@@ -222,16 +222,16 @@ RxSwift의 입문 공부 기록
 <br>
 
 ## ♣︎ Operator란? 
--Observable들을 다루는 메서드
--Observable을 변환, 필터링, 합성하는 등 다양한 Operator가 존재한다. 
+- Observable들을 다루는 메서드
+- Observable을 변환, 필터링, 합성하는 등 다양한 Operator가 존재한다. 
 원하는 만큼 연쇄적으로 제공 할 수 있다. 
 
--Observable Class 가 연산자별 로 존재한다. 
+- Observable Class 가 연산자별 로 존재한다. 
 
--실제 옵저바블이 creating 연산자를 만들면, 여러개의 연산자가 적용이 되면 서 
+- 실제 옵저바블이 creating 연산자를 만들면, 여러개의 연산자가 적용이 되면 서 
 구독을 할떄 마지막 옵저버블부터해서(역방향 순서) 차례대로 구독이 된다. ?
 
--옵저버블의 이벤트 처리는 맨 처음 연산자 부터 순서대로(정방향 순서) 발생한다. 
+- 옵저버블의 이벤트 처리는 맨 처음 연산자 부터 순서대로(정방향 순서) 발생한다. 
 
 <br>
 
@@ -277,7 +277,7 @@ Ex) 가변인자를 받아서, “,”를 기준으로 이벤트를 흘려보낸
 - skip(n) : 요소 앞부터 특정 갯수를 제외한 값을 가져온다.
 
 ### ➣ flatmap : 하나의 stream, observable을 반환
--observable을 한 겹 벗겨내준다. (observable을 평평하게 만든다?)
+- observable을 한 겹 벗겨내준다. (observable을 평평하게 만든다?)
 
 ### ➣ flatmapLatest : 가장 마지막으로 추가된 순서의 Observable 이벤트만 subscribe한다.
 - switchLatest + map
@@ -291,7 +291,7 @@ Ex) 가변인자를 받아서, “,”를 기준으로 이벤트를 흘려보낸
 ### ➣ zip : Observable이 방출하는 값들을 튜플로 묶어서 내보낸다. 만약 튜플로 묶을 수 없는 값은 버려진다. 
 
 ### ➣ groupBy : 원소들을 특정 조건에 따라 그룹지어준다. 
-Observable -> groupedObservable
+- Observable -> groupedObservable
 
 ### ➣ buffer : 특정 시간동안 시간이 다되거나 or Count로 요소의 갯수 제한, count만큼 갯수가 차면 방출
 
