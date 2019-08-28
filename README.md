@@ -221,6 +221,8 @@ RxSwift의 입문 공부 기록
 
 <br>
 
+### Observable의 Subscribe는 역방향, Event는 정방향?
+
 ## ♣︎ Operator란? 
 - Observable들을 다루는 메서드
 - Observable을 변환, 필터링, 합성하는 등 다양한 Operator가 존재한다. 
