@@ -3,7 +3,7 @@
 <br>
 <br>
 
-# RxSwif 스터디 정리
+# RxSwift 스터디 정리
 
 RxSwift의 입문 공부 기록
 
@@ -15,21 +15,39 @@ RxSwift의 입문 공부 기록
 ✓ + 공부하는 RxSwift 지식을 붙여 기록합니다.
 
 <br>
+
+# RxSwift 학습 개인 학습 메모 
+
+### RxSwift 학습 전 숙지사항 
+- Swift Language -> Functional Programming / Protocol Oriented Programming -> RxSwift 
+- 학습난이도가 비교적 있는 편
+- Observer, Subject, Driver 등의 사용을 위해선 기본적인 Swift 문법은 숙지되어있어야 한다. 
+
+### RxSwift란?
+- ReactiveX 라이브러리를 Swift로 구현한 것으로, Observable Stream을 이용한 비동기 API이다.
+  
+### 왜 RxSwift를 사용하는가?
+- Key Value Observing, Notifications 등, 다양한 상황에서의 구현을 간결하게 표현할 수 있음.
+- **보다 단순하고 직관적인 코드를 작성할 수 있음**
+
+
+<br>
 <br>
 
-# Part1. Model 
+# 곰튀김 RxSwift 강의 정리 
+## Part1. Model 
 
-## ReactiveX, RxSwift란? 
-	* An API for asynchronous programming with observable streams
-	  ➣ 감시 스트림(Observable) 사용 비동기 프로그래밍을 위한 API
+### ReactiveX, RxSwift란? 
+- * An API for asynchronous programming with observable streams
+  - ➣ 감시 스트림(Observable) 사용 비동기 프로그래밍을 위한 API
 
 ### RxSwift와 함께하는 MVVM 패턴
 - **MVVM**
-	- input이 들어온다 -> View가 반응한다. -> View가 아닌 ViewModel이 어떻게 처리할까 판단한다. -> Model에서 받아온다. 
-	- ViewMedel에서 UIKit 관련 UI와 관련되어지는 부분에 대해서 신경쓰고 관리해야 한다.
-	- ViewModel은 View에 종속되어선 안되며 재사용이 가능해야 잘 구현 된 ViewMedel이라 할 수 있다.
-<br>
-*<출처 : 밀쿄님 RxSwift 강좌>*
+  - input이 들어온다 -> View가 반응한다. -> View가 아닌 ViewModel이 어떻게 처리할까 판단한다. -> Model에서 받아온다. 
+  - ViewMedel에서 UIKit 관련 UI와 관련되어지는 부분에 대해서 신경쓰고 관리해야 한다.  
+  - ViewModel은 View에 종속되어선 안되며 재사용이 가능해야 잘 구현 된 ViewMedel이라 할 수 있다.
+
+- *<출처 : 밀쿄님 RxSwift 강좌>*
 
 <br>
 
@@ -66,29 +84,31 @@ RxSwift의 입문 공부 기록
 <br>
 <br>
 
-# Part2. Operator, Scheduler 
+## Part2. Operator, Scheduler 
 
 <br>
 
-## Operator
-### - Just
-     JUST() 출력결과: print가 바로 실행된다.
-     -> Hello World
+### Operator
+- Just
+  - JUST() 출력결과: print가 바로 실행된다.
+  - -> Hello World
 
-### - From
-
-     FROM() 출력결과: 배열의 요소를 하나씩 하나씩 하나씩 차례대로 처리한다.
-     ✓ 작업 완료 후에 completed 분기가 실행이 된다!
+- From
+  - FROM() 출력결과: 배열의 요소를 하나씩 하나씩 하나씩 차례대로 처리한다.
+  - ✓ 작업 완료 후에 completed 분기가 실행이 된다!
    
-### - Single
-     Single : 하나의 특정 동작만 처리 여러동작 잡히면 에러처리
-     ✓ single()을 실행하기 위해선 작업이 한개만 들어와야 한다!
+- Single
+  - Single : 하나의 특정 동작만 처리 여러동작 잡히면 에러처리
+  - ✓ single()을 실행하기 위해선 작업이 한개만 들어와야 한다!
     
-### - Map : 내려온 작업, 데이터를 하나씩 다른 데이터로 변형시킨다.
+- Map
+  - 내려온 작업, 데이터를 하나씩 다른 데이터로 변형시킨다.
 
-### - FlatMap : 내려온 작업, 데이터를 하나씩 스트림(Stream)으로 변형시킨다.
+- FlatMap
+  - 내려온 작업, 데이터를 하나씩 스트림(Stream)으로 변형시킨다.
 
-### - Concat : 다수의 Observable을 하나로 순서대로 합쳐서 실행한다.
+- Concat
+  - 다수의 Observable을 하나로 순서대로 합쳐서 실행한다.
 
 <br>
 
@@ -114,88 +134,104 @@ RxSwift의 입문 공부 기록
 <br>
 <br>
 
-# Part3. Subject
+## Part3. Subject
 
 <br>
 
-## Subject
+### Subject
 - Subject의 종류 : Async Subject, BehaviorSubject, publishSubject, ReplaySubject
 
-### - Behavior Subject : 스스로 데이터를 발생 가능 + Subscribe 가능 Observable
-	- 최초 SubScribe 이후, Default값으로 상태를 지켜보며 기다리다가 어떤 subscribe가 발생하면
-	  ➢ 그 Subscribe에 최근 데이터값을 넘겨준다.
-	- 해당 Subject가 종료 되면 이후 라는 스트림에서 Subscribe를 해도 해당 Subject는 종료된다.
-	✓ Bullet View만 상황을 지켜보다가 Enable or Disable 여부를 판단하여 변경할 수 있다.
-		* (value: false) -> default 값으로 false 설정을 했음을 의미
+- Behavior Subject
+  - 스스로 데이터를 발생 가능 + Subscribe 가능 Observable
+  - 최초 SubScribe 이후, Default값으로 상태를 지켜보며 기다리다가 어떤 subscribe가 발생하면
+    - ➢ 그 Subscribe에 최근 데이터값을 넘겨준다.
+    - - 해당 Subject가 종료 되면 이후 라는 스트림에서 Subscribe를 해도 해당 Subject는 종료된다.
+    - ✓ Bullet View만 상황을 지켜보다가 Enable or Disable 여부를 판단하여 변경할 수 있다.
+    - * (value: false) -> default 값으로 false 설정을 했음을 의미
 		
-### - Behavior Replay : Behavior Wrapper로, 종료 시 Error, Completed를 동반하지 않는다.
+- Behavior Replay 
+  - Behavior Wrapper로, 종료 시 Error, Completed를 동반하지 않는다.
 
-### - Async Subject : 해당 Subject가 종료되는 시점의 맨 마지막 전달된 데이터를 SubScribe한 Stream들에 전달시킨다.
+- Async Subject
+  - 해당 Subject가 종료되는 시점의 맨 마지막 전달된 데이터를 SubScribe한 Stream들에 전달시킨다.
 
-### - Publish Subject : 데이터가 생성되면 그때 데이터를 전달한다. "최초 Default값이 없다." 
-	- 데이터가 생성될 때마다 해당 Subject를 Subscribe한 놈들에게 전부 해당 데이터를 전달한다.
+- Publish Subject
+  - 데이터가 생성되면 그때 데이터를 전달한다. "최초 Default값이 없다." 
+  - 데이터가 생성될 때마다 해당 Subject를 Subscribe한 놈들에게 전부 해당 데이터를 전달한다.
 
-### - Replay Subject : 데이터가 생성되면 지금까지 생성했던 데이터를 한꺼번에 전달한다. "최초 Default값이 없다." 
-	- 마블 3개가 지나간 뒤 다른 Subscribe가 진행되면 해당 Stream에 이전 마블 3개를 전부 전달한다. 
-	- 이후 생성되는 데이터는 동일하게 모든 Stream에 전달된다.
+- Replay Subject 
+  - 데이터가 생성되면 지금까지 생성했던 데이터를 한꺼번에 전달한다. "최초 Default값이 없다." 
+  - 마블 3개가 지나간 뒤 다른 Subscribe가 진행되면 해당 Stream에 이전 마블 3개를 전부 전달한다. 
+  - 이후 생성되는 데이터는 동일하게 모든 Stream에 전달된다.
 
-* Variable -> Deprecated
+- * Variable -> Deprecated
 
-## Drive
-	// MainScheduler 등 명시 안하고 메인스레드로 돌려서 UI 등 처리할 수 있는 또 다른 방법 정도로 이해해두면 됨
-	    viewModel.idBulletVisible
-	    .asDriver()
-	    .drive(onNext: idValidView.isHidden = $0)
-	    .disposed(by: disposeBag)
+### Drive
+~~~ Swift 
+// MainScheduler 등 명시 안하고 메인스레드로 돌려서 UI 등 처리할 수 있는 또 다른 방법 정도로 이해해두면 됨
+    viewModel.idBulletVisible
+    .asDriver()
+    .drive(onNext: idValidView.isHidden = $0)
+    .disposed(by: disposeBag)
+~~~
 
 <br>
 <br>
 
-# 기타 유용한 RxSwift Library
-### RxDataSources : https://github.com/RxSwiftCommunity/RxDataSources
-- 테이블, 컬렉션 뷰의 RxdataSources
-- **기능**
-	- 차이점 계산에 대한 0(N) 복잡도 알고리즘
-		- 해당 알고리즘은 모든 섹션 및 아이템들이 구체적이며 모호성이 없다고 가정 시 작동한다.
-		- 만약 모호성이 존재할 시 갱신 미동작 및 자동적으로 fallbacks(물러남) 처리된다.
-	- 섹션으로 구성 된 뷰에 최소한의 명령을 보낼 수 있도록 추가적인 (휴리스틱)직관적 판단을 적용한다. 
-		- 비록 실행 시간은 선형으로 진행되지만, 전송되는 명령의 선호되는 갯수는 보통 선형보다 매우 적다.
-		* 휴리스틱 : 어떤 사안 또는 상황에 대해 엄밀한 분석에 의하기보다 제한된 정보만으로 즉흥적 · 직관적으로 판단 · 선택하는 의사결정 방식을 의미한다.
-		- 가능한 변경횟수를 적은 횟수로 제한하도록 선호된다. 만약 선형적으로 변경횟수가 증가하는 경우, 정상적인 리로드(Reload)를 수행하십시오.
+## 기타 유용한 RxSwift Library
+- RxDataSources : https://github.com/RxSwiftCommunity/RxDataSources
+  - 테이블, 컬렉션 뷰의 RxdataSources
+  - **기능**
+    - 차이점 계산에 대한 0(N) 복잡도 알고리즘
+      - 해당 알고리즘은 모든 섹션 및 아이템들이 구체적이며 모호성이 없다고 가정 시 작동한다.
+      - 만약 모호성이 존재할 시 갱신 미동작 및 자동적으로 fallbacks(물러남) 처리된다.
+    - 섹션으로 구성 된     뷰에 최소한의 명령을 보낼 수 있도록 추가적인 (휴리스틱)직관적 판단을 적용한다. 
+      - 비록 실행 시간은 선형으로 진행되지만, 전송되는 명령의 선호되는 갯수는 보통 선형보다 매우 적다.
+      * 휴리스틱 : 어떤 사안 또는 상황에 대해 엄밀한 분석에 의하기보다 제한된 정보만으로 즉흥적 · 직관적으로 판단 · 선택하는 의사결정 방식을 의미한다.
+      - 가능한 변경횟수를 적은 횟수로 제한하도록 선호된다. 만약 선형적으로 변경횟수가 증가하는 경우, 정상적인 리로드(Reload)를 수행하십시오.
 	- 아이템과 섹션구조의 확장(Extending)을 제공한다.
-		- 당신의 아이템은 IdentifiableType, Equatable과 함께, 섹션은 AnimatableSectionModelType과 함께 확장할 수 있다.
+	  - 당신의 아이템은 IdentifiableType, Equatable과 함께, 섹션은 AnimatableSectionModelType과 함께 확장할 수 있다.
 	- 섹션, 아이템을 위한 2단계로 계층적 애니메이션의 모든 조합들을 지원한다.
-		- 섹션 애니메이션 : Insert, Delete, Move
-		- 아이템 애니메이션 : Insert, Delete, Move, Reload (만약 이전값이 새로운 값과 다를 경우)
+	  - 섹션 애니메이션 : Insert, Delete, Move
+	  - 아이템 애니메이션 : Insert, Delete, Move, Reload (만약 이전값이 새로운 값과 다를 경우)
 	- 삽입, 리로드, 삭제 등을 위한 조작가능한 애니메이션 타입들(Automatic, Fade, ...
 	- 랜덤화된 스트레스 강도 테스트
 	- 즉시 사용가능한 편집을 지원
 	- UITableView, UICollectionView와 함께 동작
 	- * DataBinding + SectionModel을 사용해야만 RxDataSource를 사용 할 수 있다.
  
-### RxOptional : .filterNil() 등을 사용하여 쉽게 옵셔널 데이터 처리가 가능하다.
-### RxViewController :
-	self.rx.viewWillDisappear.subscribe...
-	self.rx.viewWillAppear().take(1).subscribe...
-	// -> (viewWillAppear에 여러번 들러도 한번만 처리하게 하는 기능) 등의 접근 가능- ---- 
-### RxGesture : 제스쳐기능의 코드부 간략화 가능
-	view.rx
-	    .anyGesture(.top(), .swipe([up, .down]))
-	    .when(.recognized)
-	    .subscribe(onNext: { _ in
-	    dismiss presented photo
-	    })
-	    .disposed(by: disposeBag)
+- RxOptional : .filterNil() 등을 사용하여 쉽게 옵셔널 데이터 처리가 가능하다.
+- RxViewController
+~~~ Swift 
+self.rx.viewWillDisappear.subscribe...
+self.rx.viewWillAppear().take(1).subscribe...
+// -> (viewWillAppear에 여러번 들러도 한번만 처리하게 하는 기능) 등의 접근 가능- ---- 
+~~~
+
+<br>
+
+- RxGesture : 제스쳐기능의 코드부 간략화 가능
+~~~ Swift
+view.rx
+    .anyGesture(.top(), .swipe([up, .down]))
+    .when(.recognized)
+    .subscribe(onNext: { _ in
+    dismiss presented photo
+    })
+    .disposed(by: disposeBag)
+~~~
+
+<br>
 
 <br>
 <br>
 
-# RxSwift 사용 간 주의사항
-## UI Input 등의 RxSwift 동작은 Complete 되지 않는다
-### UI의 Reference Count가 1로 계속 유지 될 수 있다. 
-	* 이로 인한 메모리 누수 방지를 위해 할 수 있는 방법
-	 1) 클로져 내 [weak self]를 고려해야 한다.
-	 2) disposeBag = DisposeBag() 의 활용
+### RxSwift 사용 간 주의사항
+- UI Input 등의 RxSwift 동작은 Complete 되지 않는다
+- UI의 Reference Count가 1로 계속 유지 될 수 있다. 
+  - * 이로 인한 메모리 누수 방지를 위해 할 수 있는 방법
+    - 1) 클로져 내 [weak self]를 고려해야 한다.
+    - 2) disposeBag = DisposeBag() 의 활용
 ### 그 외 주의사항
 - do(), subcribe() 사이드이펙트를 건드린다는 것을 명심해야한다. 
 	 
@@ -204,26 +240,25 @@ RxSwift의 입문 공부 기록
 
 
 
-# 결론
-## ♣︎ 곰튀김님의 맺음말
-	여러분들은 RxSwift를 4시간만에 끝내기는 커녕 3시간만에 끝내셨습니다(?)
-### ✔︎ 굉장히 다양한 Operator 기능을 통한 활용성
-### ✔︎ 커뮤니티가 활성화되어 있어 유용한 외부 라이브러리가 존재
-### ✔︎ iOS개발자로서 경쟁력이자 강점이 될 수 있다.
+## 결론
+*여러분들은 RxSwift를 4시간만에 끝내기는 커녕 3시간만에 끝내셨습니다(?)*
+- ✔︎ 굉장히 다양한 Operator 기능을 통한 활용성
+- ✔︎ 커뮤니티가 활성화되어 있어 유용한 외부 라이브러리가 존재
+- ✔︎ iOS개발자로서 경쟁력이자 강점이 될 수 있다.
 	
 #
 
 <br>
 <br>
 
-# 라이노님의 RxStudy 발표 내용 정리
+## 라이노님의 RxStudy 발표 내용 정리
 ### '19. 08. 28.
 
 <br>
 
 ### Observable의 Subscribe는 역방향, Event는 정방향?
 
-## ♣︎ Operator란? 
+### ♣︎ Operator란? 
 - Observable들을 다루는 메서드
 - Observable을 변환, 필터링, 합성하는 등 다양한 Operator가 존재한다. 
 원하는 만큼 연쇄적으로 제공 할 수 있다. 
@@ -237,7 +272,7 @@ RxSwift의 입문 공부 기록
 
 <br>
 
-## ♣︎ 생성 연산자
+### ♣︎ 생성 연산자
 ### ➣ from : 컬렉션(배열 등)을 인자로 받아 해당 원소를 하나씩 이벤트로 내보내는 Observable을 만든다. 
 Ex)  [1,2,3] 배열이 있다 했을때… 
 => 원소를 하나하나 빼가지고 이벤트를 흘려보낸다.
@@ -255,49 +290,53 @@ Ex) 가변인자를 받아서, “,”를 기준으로 이벤트를 흘려보낸
 
 <br>
 
-## 그 외 Operator
+### 그 외 Operator
 
-### ➣ filter : 특정 조건을 충족하는 값만을 필터링 후 새로운 배열값을 반환한다.
-### ➣ debounce(디바운스) : 이벤트가 한번 발생한 뒤 일정 시간을 잰다. 
-- 재는 시간 사이에 다른 이벤트가 발생하지 않아야만 옵저바블을 넘긴다. 
-- 만약 재는 시간 중 다른 이벤트가 발생하면, 다른 이벤트 + debounce이벤트는 씹힌다.
-- UI 터치 등을 여러번이 아닌 한번만 감지해야 할때 등에 사용할 수 있다. 
-- SearchBar 검색 기능 등에도 여러번 검색 되지 않도록 사용할 수 있다. 
+- ➣ filter : 특정 조건을 충족하는 값만을 필터링 후 새로운 배열값을 반환한다.
+- ➣ debounce(디바운스) : 이벤트가 한번 발생한 뒤 일정 시간을 잰다. 
+  - 재는 시간 사이에 다른 이벤트가 발생하지 않아야만 옵저바블을 넘긴다. 
+  - 만약 재는 시간 중 다른 이벤트가 발생하면, 다른 이벤트 + debounce이벤트는 씹힌다.
+  - UI 터치 등을 여러번이 아닌 한번만 감지해야 할때 등에 사용할 수 있다. 
+  - SearchBar 검색 기능 등에도 여러번 검색 되지 않도록 사용할 수 있다. 
 
-### ➣ throttle : 특정 시간 간격 내 발생하는 이벤트 특정 시간 단위로 시간을 쟤며 체크, 체크 시점에 결과 무조건 방출
+- ➣ throttle : 특정 시간 간격 내 발생하는 이벤트 특정 시간 단위로 시간을 쟤며 체크, 체크 시점에 결과 무조건 방출
+
 ~~~ swift
 // Timer.throttle(RxTimeInterval.seconds(2), latest: true, scheduler: 
 // MainScheduler.instance)….
 ~~~
+
+<br>
+
 - lastest 옵션이 true? 타이머가 끝나는 시점 발행 된 마지막 값을 가져온다. : 타이머가 끝난 후의 값을 가져온다. 
   -이벤트가 발생하는 시간이 throttle에 떨어지는 시간이 끊어졌을때 그 마지막 값을 가져오는게 true, throttle로 방출하고 다음걸 방출할때 그 값을 가져온게 false
 
-### ➣ take
-- take(n): 요소의 앞부터 순서대로 특정 개수(n)의 값을 가져온다. 
+- ➣ take
+  - take(n): 요소의 앞부터 순서대로 특정 개수(n)의 값을 가져온다. 
 
-### ➣ skip
-- skip(n) : 요소 앞부터 특정 갯수를 제외한 값을 가져온다.
+- ➣ skip
+  - skip(n) : 요소 앞부터 특정 갯수를 제외한 값을 가져온다.
 
-### ➣ flatmap : 하나의 stream, observable을 반환
-- observable을 한 겹 벗겨내준다. (observable을 평평하게 만든다?)
+- ➣ flatmap : 하나의 stream, observable을 반환
+  - observable을 한 겹 벗겨내준다. (observable을 평평하게 만든다?)
 
-### ➣ flatmapLatest : 가장 마지막으로 추가된 순서의 Observable 이벤트만 subscribe한다.
+- ➣ flatmapLatest : 가장 마지막으로 추가된 순서의 Observable 이벤트만 subscribe한다.
 - switchLatest + map
 
-### ➣ switchLatest = flatmapLatest에서 map 기능이 빠진 것
+- ➣ switchLatest = flatmapLatest에서 map 기능이 빠진 것
 
-### ➣ merge : 나오는 대로 함치는 것 그냥 순수하게 두개를 합쳐버림
+- ➣ merge : 나오는 대로 함치는 것 그냥 순수하게 두개를 합쳐버림
 
-### ➣ combineLatest : 받은 두 개의 Observable중 하나만 변경되면 가장 최근의 두 Observable들을 방출
+- - ➣ combineLatest : 받은 두 개의 Observable중 하나만 변경되면 가장 최근의 두 Observable들을 방출
 
-### ➣ zip : Observable이 방출하는 값들을 튜플로 묶어서 내보낸다. 만약 튜플로 묶을 수 없는 값은 버려진다. 
+- ➣ zip : Observable이 방출하는 값들을 튜플로 묶어서 내보낸다. 만약 튜플로 묶을 수 없는 값은 버려진다. 
 
-### ➣ groupBy : 원소들을 특정 조건에 따라 그룹지어준다. 
-- Observable -> groupedObservable
+- ➣ groupBy : 원소들을 특정 조건에 따라 그룹지어준다. 
+- servable -> groupedObservable
 
-### ➣ buffer : 특정 시간동안 시간이 다되거나 or Count로 요소의 갯수 제한, count만큼 갯수가 차면 방출
+- ➣ buffer : 특정 시간동안 시간이 다되거나 or Count로 요소의 갯수 제한, count만큼 갯수가 차면 방출
 
-### ➣ window : buffer와 기능은 동일하나 Observable로 나온다. 시간이 다되거나 or Count 만큼 Observable의 갯수가 차면 방출
+- ➣ window : buffer와 기능은 동일하나 Observable로 나온다. 시간이 다되거나 or Count 만큼 Observable의 갯수가 차면 방출
 
-### ➣ startWith : 가변인자를 받아 onNext상황없이 Subscribe가 될때 원하는 값을 실행
+- ➣ startWith : 가변인자를 받아 onNext상황없이 Subscribe가 될때 원하는 값을 실행
 
