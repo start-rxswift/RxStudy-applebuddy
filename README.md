@@ -204,6 +204,42 @@ disposeBag = DisposeBag()
 
 
 
+## Operator, 연산자
+
+- RxSwift에서 자주 사용 되는 연산자(Operator)
+- RxSwift가 제공하는 여러가지 타입 중, ObservableType Protocol이 있다 
+  - RxSwift의 근간을 이루는 여러가지 기능이 담겨 있는데 이들을 Operator, 연산자라 한다. 
+
+<br>
+
+### 연산자의 특징
+
+- 대부분의연산자는 Observable상에서 동작하며, Observable을 리턴한다. 
+- Observable을 리턴하기 때문의 두개 이상의 다수의 Operator를 동시에 사용할 수 있다. 
+
+~~~ swift
+/// MARK: - 연산자의 사용 예시
+import RxSwift
+import RxCocoa
+
+let disposeBag = DisposeBag()
+
+// Operator 중 하나인 take(N)는 Observable이 방출하는 요소 중에서 처음부터 N개의 요소만 전달해주는 연산자이다.
+// Operator 중 하나인 filter는 특정 요건을 충족한 요소만 필터링하여 전달해주는 연산자이다.
+// 아래 코드는 take(N), filter Operator를 사용하여 1~5번째 까지의 요소 중 2의 배수만 필터링하여 전달해주는 과정이다.
+Observable.from([1,2,3,4,5,6,7,8,9])
+.take(5)
+    .filter { $0.isMultiple(of: 2) }
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// 위에서 사용한 take, filter 연산자 처럼 연산자를 필요에 따라 불여서 다수 사용이 가능하다.
+// * 단, 연산자의 실행 순서에 따라 결과가 달라질 수 있음에 주의해야 한다.
+~~~
+
+<br>
+
+
 <br>
 <br>
 
