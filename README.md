@@ -18,6 +18,8 @@ RxSwift의 입문 공부 기록
 
 # RxSwift 학습 개인 학습 메모 
 
+<br> 
+
 ### RxSwift 학습 전 숙지사항 
 - Swift Language -> Functional Programming / Protocol Oriented Programming -> RxSwift 
 - 학습난이도가 비교적 있는 편
@@ -30,9 +32,29 @@ RxSwift의 입문 공부 기록
 - Key Value Observing, Notifications 등, 다양한 상황에서의 구현을 간결하게 표현할 수 있음.
 - **보다 단순하고 직관적인 코드를 작성할 수 있음**
 
+### Observable 
+- Observable은 이벤트를 전달한다. 
+- Next : 방출, Emission (Observer, Subscriber로 전달)
+- Error : 에러 발생시 전달, Observable 주기 끝에 실행, Notification
+- Completed : 성공적으로 실행 시 전달, Observable 주기 끝에 실행, Notification
+
+### Observer
+- Observer를 Subscriber라고도 부른다. 
+- Observable을 감시하고 있다가 전달되는 이벤트를 처리한다.
+- 이때 Observable을 감시하고 있는 것을 Subscribe라고 한다. 
+
+- * Marble Diagram을 통해 다양한 RxMarble의 작동 과정을 확인 할 수 있다.
+    - RxSwift를 공부할 때 큰 도움이 됨
+
+
+
+<br>
 <br>
 
+
+
 ## Observable의 생성
+
 ~~~ Swift
 /// MARK: - Observable의 생성
 // Observable을 생성하는 방법은 2가지 방법이 있다.
@@ -60,6 +82,37 @@ Observable.from([0, 1])
 
 // 이벤트 전달 시점은 언제? -> Observer가 Observable을 구독하는 시점에 Next이벤트를 통해 방출 및 Completed이벤트가 전달된다.
 ~~~
+
+<br>
+<br>
+
+## 옵저버의 구독
+- 1) 하나의 클로져를 통해 모든 이벤트를 처리하고자 할때는 아래와 같이 구독을 사용할 수 있다
+
+
+~~~ Swift 
+o1.subscribe {
+    // * subscribe 클로져 내 "== Start ==" 가 연달아 "== End ==" 없이 두번 호출되는 경우는 없다.
+    print("== Start ==")
+    print($0)
+    // 순수 값을 추출하여 출력할 수 있으며, Optional이므로 Optioanl Binding이 필요하다.
+    if let value = $0.element {
+        print($0)
+    }
+    print("== End ==")
+}
+
+print("===========================")
+// 2) 세부적인 구독 처리도 가능
+// '$0.element' 같은 방식으로 접근 할 필요 없이 onNext: 클로져 인자값을 통해 element에 바로 접근할 수 있다.
+o1.subscribe(onNext: { (element) in
+    // 순수 element 값만 출력 되는 것을 확인할 수 있다.
+    print(element)
+})
+~~~
+
+<br>
+<br>
 
 <br>
 <br>
