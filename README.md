@@ -21,24 +21,29 @@ RxSwift의 입문 공부 기록
 <br> 
 
 ### RxSwift 학습 전 숙지사항 
+
 - Swift Language -> Functional Programming / Protocol Oriented Programming -> RxSwift 
 - 학습난이도가 비교적 있는 편
 - Observer, Subject, Driver 등의 사용을 위해선 기본적인 Swift 문법은 숙지되어있어야 한다. 
 
 ### RxSwift란?
+
 - ReactiveX 라이브러리를 Swift로 구현한 것으로, Observable Stream을 이용한 비동기 API이다.
-  
+
 ### 왜 RxSwift를 사용하는가?
+
 - Key Value Observing, Notifications 등, 다양한 상황에서의 구현을 간결하게 표현할 수 있음.
 - **보다 단순하고 직관적인 코드를 작성할 수 있음**
 
 ### Observable 
+
 - Observable은 이벤트를 전달한다. 
 - Next : 방출, Emission (Observer, Subscriber로 전달)
 - Error : 에러 발생시 전달, Observable 주기 끝에 실행, Notification
 - Completed : 성공적으로 실행 시 전달, Observable 주기 끝에 실행, Notification
 
 ### Observer
+
 - Observer를 Subscriber라고도 부른다. 
 - Observable을 감시하고 있다가 전달되는 이벤트를 처리한다.
 - 이때 Observable을 감시하고 있는 것을 Subscribe라고 한다. 
@@ -87,11 +92,14 @@ Observable.from([0, 1])
 <br>
 
 ## 옵저버의 구독
+
 - 1) 하나의 클로져를 통해 모든 이벤트를 처리하고자 할때는 아래와 같이 구독을 사용할 수 있다
 
 
-~~~ Swift 
-o1.subscribe {
+~~~ Swift
+import RxSwift
+import RxCocoa
+observer.subscribe {
     // * subscribe 클로져 내 "== Start ==" 가 연달아 "== End ==" 없이 두번 호출되는 경우는 없다.
     print("== Start ==")
     print($0)
@@ -105,7 +113,7 @@ o1.subscribe {
 print("===========================")
 // 2) 세부적인 구독 처리도 가능
 // '$0.element' 같은 방식으로 접근 할 필요 없이 onNext: 클로져 인자값을 통해 element에 바로 접근할 수 있다.
-o1.subscribe(onNext: { (element) in
+observer.subscribe(onNext: { (element) in
     // 순수 element 값만 출력 되는 것을 확인할 수 있다.
     print(element)
 })
@@ -113,6 +121,88 @@ o1.subscribe(onNext: { (element) in
 
 <br>
 <br>
+
+## Disposable
+
+- Disposed는 Observer가 전달하는 이벤트가 아니다. 
+- 리소스가 해제되는 시점에 자동으로 호출되는 것이 Disposed이다.
+  - 하지만, RxSwift 공식 문서에 따르면 Disposed를 정리/명시 해줄 것을 권고한다. 가능한 따르는 것이 좋을 것이다.
+
+<br>
+
+~~~ swift
+import RxCocoa
+import RxSwift
+
+// 1씩 증가하는 정수를 1초간격으로 출력하는 Observable
+// 해당 작업의 종료를 위해서는 Dispose 처리가 필요하다.
+let subscription2 = Observable<Int>.interval(.seconds(1),
+                                              scheduler: MainScheduler.instance)
+.subscribe(onNext: { element in
+    // Emmission
+    // "Next 1~3" 이 출력
+    print("Next",element)
+}, onError: { (error) in
+    // Notification
+    print("Error",error)
+}, onCompleted: {
+    // Notification
+    // Observable 완료 시 실행
+    print("Completed")
+    
+    // Disposed는 Observable이 전달하는 이벤트는 아니다. Observable과 관련된 모든 리소스가 제거된 뒤 호출이 된다.
+}) {
+    print("Disposed")
+}
+
+// Disposable의 dispose() 메서드를 통해 3초 가 지나면 해당 Observable을 Dispose 처리한다.
+// 해당 기능은 take, until 등의 Operator 등을 통해서도 구현할 수 있다. 
+// 0, 1, 2까지만 출력됨
+DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+    subscription2.dispose()
+}
+
+~~~
+
+<br>
+
+### Subscription Disposable
+
+- Observer 구독시 사용하는 메서드, **subscribe의 반환형은 Disposable(Subscription Disposable)**이다. 
+- 크게 리소스 해제와 실행 취소에 사용하는 것이 Subscription Disposable이다.
+
+
+
+<br><br>
+
+## DisposeBag
+
+- subscription 시 반환되는 Disposable들을 담는 가방
+
+~~~ swift
+import RxSwift
+import RxCocoa
+
+var disposeBag = DisposeBag()
+
+// Disposed는 옵저버가 전달하는 이벤트가 아니다.
+// -> 리소스가 해제되는 시점에 자동으로 호출되는 것이 Disposed이다.
+// * 하지만, RxSwift 공식 문서에서는 Disposed를 정리/명시해줄 것을 권고한다. -> 가능한 따르는 것이 좋음.
+Observable.from([1,2,3])
+    .subscribe {
+        print($0)
+}.disposed(by: disposeBag)
+// - 위와 같이 disposed(by: bag) 식으로 DisposeBag을 사용할 수 있다.
+// - 해당 subscription에서 반환되는 Disposable은 bag(DisposeBag)에 추가된다.
+// - 이렇게 추가된 Disposable 들은 DisposeBag이 해제되는 시점에 함께 헤제되게 된다.
+
+// 새로운 DisposeBag()으로 초기화하면 이전까지 담겨있던 Disposable들은 함께 헤제된다.
+disposeBag = DisposeBag()
+~~~
+
+<br>
+
+
 
 <br>
 <br>
@@ -375,14 +465,17 @@ Ex) 가변인자를 받아서, “,”를 기준으로 이벤트를 흘려보낸
 
 ### 그 외 Operator
 
-- ➣ filter : 특정 조건을 충족하는 값만을 필터링 후 새로운 배열값을 반환한다.
-- ➣ debounce(디바운스) : 이벤트가 한번 발생한 뒤 일정 시간을 잰다. 
+- filter 
+  - 특정 조건을 충족하는 값만을 필터링 후 새로운 배열값을 반환한다.
+- debounce(디바운스)
+  - 이벤트가 한번 발생한 뒤 일정 시간을 잰다. 
   - 재는 시간 사이에 다른 이벤트가 발생하지 않아야만 옵저바블을 넘긴다. 
   - 만약 재는 시간 중 다른 이벤트가 발생하면, 다른 이벤트 + debounce이벤트는 씹힌다.
   - UI 터치 등을 여러번이 아닌 한번만 감지해야 할때 등에 사용할 수 있다. 
   - SearchBar 검색 기능 등에도 여러번 검색 되지 않도록 사용할 수 있다. 
 
-- ➣ throttle : 특정 시간 간격 내 발생하는 이벤트 특정 시간 단위로 시간을 쟤며 체크, 체크 시점에 결과 무조건 방출
+- throttle
+  - 특정 시간 간격 내 발생하는 이벤트 특정 시간 단위로 시간을 쟤며 체크, 체크 시점에 결과 무조건 방출
 
 ~~~ swift
 // Timer.throttle(RxTimeInterval.seconds(2), latest: true, scheduler: 
@@ -394,32 +487,44 @@ Ex) 가변인자를 받아서, “,”를 기준으로 이벤트를 흘려보낸
 - lastest 옵션이 true? 타이머가 끝나는 시점 발행 된 마지막 값을 가져온다. : 타이머가 끝난 후의 값을 가져온다. 
   -이벤트가 발생하는 시간이 throttle에 떨어지는 시간이 끊어졌을때 그 마지막 값을 가져오는게 true, throttle로 방출하고 다음걸 방출할때 그 값을 가져온게 false
 
-- ➣ take
+- take
   - take(n): 요소의 앞부터 순서대로 특정 개수(n)의 값을 가져온다. 
 
-- ➣ skip
-  - skip(n) : 요소 앞부터 특정 갯수를 제외한 값을 가져온다.
+- skip
+  - skip(n)과 같은 방식으로 사용 
+  - 요소 앞부터 특정 갯수를 제외한 값을 가져온다.
 
-- ➣ flatmap : 하나의 stream, observable을 반환
+- flatmap : 하나의 stream, observable을 반환
   - observable을 한 겹 벗겨내준다. (observable을 평평하게 만든다?)
 
-- ➣ flatmapLatest : 가장 마지막으로 추가된 순서의 Observable 이벤트만 subscribe한다.
+- flatmapLatest 
+  - 가장 마지막으로 추가된 순서의 Observable 이벤트만 subscribe한다.
+  
 - switchLatest + map
 
-- ➣ switchLatest = flatmapLatest에서 map 기능이 빠진 것
+- switchLatest 
+  - flatmapLatest에서 map 기능이 빠진 것
 
-- ➣ merge : 나오는 대로 함치는 것 그냥 순수하게 두개를 합쳐버림
+- merge 
+  - 나오는 대로 함치는 것 그냥 순수하게 두개를 합쳐버림
 
-- - ➣ combineLatest : 받은 두 개의 Observable중 하나만 변경되면 가장 최근의 두 Observable들을 방출
+- combineLatest 
+  - 받은 두 개의 Observable중 하나만 변경되면 가장 최근의 두 Observable들을 방출
 
-- ➣ zip : Observable이 방출하는 값들을 튜플로 묶어서 내보낸다. 만약 튜플로 묶을 수 없는 값은 버려진다. 
+- zip 
+  - Observable이 방출하는 값들을 튜플로 묶어서 내보낸다. 만약 튜플로 묶을 수 없는 값은 버려진다. 
 
-- ➣ groupBy : 원소들을 특정 조건에 따라 그룹지어준다. 
+- groupBy 
+  - 원소들을 특정 조건에 따라 그룹지어준다. 
+  
 - servable -> groupedObservable
 
-- ➣ buffer : 특정 시간동안 시간이 다되거나 or Count로 요소의 갯수 제한, count만큼 갯수가 차면 방출
+- buffer 
+  - 특정 시간동안 시간이 다되거나 or Count로 요소의 갯수 제한, count만큼 갯수가 차면 방출
 
-- ➣ window : buffer와 기능은 동일하나 Observable로 나온다. 시간이 다되거나 or Count 만큼 Observable의 갯수가 차면 방출
+- window 
+  - buffer와 기능은 동일하나 Observable로 나온다. 시간이 다되거나 or Count 만큼 Observable의 갯수가 차면 방출
 
-- ➣ startWith : 가변인자를 받아 onNext상황없이 Subscribe가 될때 원하는 값을 실행
+- startWith
+  - 가변인자를 받아 onNext상황없이 Subscribe가 될때 원하는 값을 실행
 
