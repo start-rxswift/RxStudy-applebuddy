@@ -30,6 +30,36 @@ RxSwift의 입문 공부 기록
 - Key Value Observing, Notifications 등, 다양한 상황에서의 구현을 간결하게 표현할 수 있음.
 - **보다 단순하고 직관적인 코드를 작성할 수 있음**
 
+<br>
+
+## Observable의 생성
+~~~ Swift
+/// MARK: - Observable의 생성
+// Observable을 생성하는 방법은 2가지 방법이 있다.
+// * 1번째 방법
+// create : Observable 타입 프로토콜에 선언되어있는 타입 메서드, Operator라고도 한다.
+// - Observer를 인자로 받아 Disposable을 반환한다 .
+Observable<Int>.create { (observer) -> Disposable in
+    // observer애서 on 메서드를 호출하고, 구독자로 0이 저장되어있는 next 이벤트가 전달된다.
+    observer.on(.next(0))
+    
+    // 1이 저장되어있는 next 이벤트가 전달된다.
+    observer.onNext(1)
+    
+    // completed이벤트가 전달되고 Observable이 종료된다. 이후 다른 이벤트를 전달할 수는 없다.
+    observer.onCompleted()
+    
+    // Disposables 는 메모리 정리에 필요한 객체이다.
+    return Disposables.create()
+}
+
+// * 2번째 방법
+// from 연산자는 파라미터(인자값)으로 전달받은 값을 순서대로 방출하고 Completed Event를 전달하는 Observable을 생성한다.
+// 이처럼 create 이외로도 상황에 따른 다양한 Operator 사용이 가능한다.
+Observable.from([0, 1])
+
+// 이벤트 전달 시점은 언제? -> Observer가 Observable을 구독하는 시점에 Next이벤트를 통해 방출 및 Completed이벤트가 전달된다.
+~~~
 
 <br>
 <br>
