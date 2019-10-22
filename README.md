@@ -328,6 +328,51 @@ observer.disposed(by: disposeBag)
 
 ~~~
 
+### BehaviorSubject
+
+- BehaviorSubject는 PublishSubject와 달리, 초기값이 존재한다.
+
+- 초기 생성된 생성값, 새로운 구독자가 생기는 순간 이벤트가 바로 전달된다.
+- 새로운 구독자가 발생할 경우 BehaviorSubject는 가장 최신의 이벤트를 전달한다.
+  - 즉, BehaviorSubject는 구독자가 구독시 가장 최신의 이벤트만을 전달한다.
+
+~~~ swift
+/// MARK: - Behavior Subject
+import UIKit
+import RxSwift
+import RxCocoa
+
+let disposeBag = DisposeBag()
+
+enum Myerror: Error {
+    case error
+}
+
+// PublishSubject는 내부 이벤트가 비어있는 상태로 생성된다.
+let p = PublishSubject<Int>()
+p.subscribe { print("PublishSubject >>", $0) }
+    .disposed(by: disposeBag)
+
+// BehaviorSubject는 PublishSubject와 달리, 초기값이 존재한다.
+// 초기 생성된 생성값, 새로운 구독자가 생기는 순간 이벤트가 바로 전달된다.
+let b = BehaviorSubject<Int>(value: 0)
+b.subscribe { print("BehaciorSubject >>", $0) }
+    .disposed(by: disposeBag)
+// 새로운 Next이벤트에 대해서도 구독자들에게 이벤트를 전달한다.
+b.onNext(1)
+
+// 새로운 구독자가 발생할 경우 BehaviorSubject는 가장 최신의 이벤트를 전달한다.
+// 새로운 구독자가 BehaviorSubject를 구독 시 가장 최신 이벤트(1)를 전달 받게 된다.
+b.subscribe { print("BehaviorSubject2 >>", $0) }
+.disposed(by: disposeBag)
+
+//b.onCompleted()
+b.onError(MyError.error)
+
+// completed(), onError() 처리 이후, 새로운 BehaviorSubject 구독자가 생길 시, 해당 구독자의 next 이벤트는 실행되지 않고, completed(), onError() 처리 된다.
+b.subscribe { print("BehaviorSubject3 >>", $0) }
+.disposed(by: disposeBag)
+~~~
 
 <br>
 <br>
