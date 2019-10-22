@@ -239,6 +239,95 @@ Observable.from([1,2,3,4,5,6,7,8,9])
 
 <br>
 
+## Subject 
+
+- Observable인 동시에 Observer
+
+<br> 
+
+### Subject 종류
+
+- PublishSubject
+  - Subject로 전달되는 새로운 이벤트를 구독자에게 전달
+- BehaviorSubject
+  - 생성시점에 시작이벤트를 지정, 가장 마지막 전달된 최신이벤트를 전달해두었다가 새로운 구독자에게 전달
+- ReplaySubject
+  - 하나 이상의 최신 이벤트를 버퍼에 저장한다. 
+  - -> 옵저버가 구독을 시작하면 버퍼에 있는 모든이벤트를 전달 
+- AsyncSubject
+  - Subject로 completed 이벤트가 전달되는 시점에 마지막으로 전달된 next 이벤트를 구독자로 전달한다. 
+
+#### Subject Relay
+
+- Relay 이벤트는 next 이벤트만 받고 completed, error 이벤트는 받지 않는다. 
+- 주로 종료 없이 계속적으로 실행되는 이벤트를 처리할때 사용한다. 
+
+- PublishRelay
+
+  - Publish Subject를 랩핑한 것
+
+- BehaviorRelay
+
+  - Behavior Subject를 랩핑한 것
+
+  
+
+### PublishSubject
+
+- Subject로 전달되는 이벤트를 옵저버로 전달하는 가장 기본적인 Subject 
+- 최초로 생성되는 시점 ~ 첫 구독이 시작되는 시기 사이에는 이벤트가 처리되지않고 사라진다.
+  - 만약 이벤트가 사라지는것이 문제가 된다면? -> ReplaySubject, ColdObservable을 사용한다.
+
+~~~ swift
+/// MARK: -Subject 사용 예시)
+import UIKit
+import RxSwift
+import RxCocoa
+
+/// MARK: Observable : 이벤트를 전달
+/// MARK: Observer : Observable을 구독하고, 전달받은 이벤트를 처리
+
+let disposeBag = DisposeBag()
+enum MyError: Error {
+    case error
+}
+
+// PublishSubject는 처음 생성 당시 저장하고 있는 이벤트가 없다.
+// Subject는 Observable이자, Observer이다.
+let subject = PublishSubject<String>()
+
+// subject로 Next이벤트가 전달, 구독하고있는 옵저버가 없으므로 처리되지 않고 사라진다.
+// Hello 출력 x
+subject.onNext("Hello")
+
+// publish Subject는 구독이후에 전달되는 새로운 이벤트만 구독자에게 전달한다.
+// 구독자가 구독하기 전의 생성된 이벤트는 전달되지 않는다.
+// 들어온 값에 대한 ">> 1 ~~~~" 출력을 실행하는 subject를 구독한 observer
+let observer = subject.subscribe { print(">> 1", $0) }
+observer.disposed(by: disposeBag)
+
+subject.onNext("RxSwift")
+
+// observer가 subject를 구독한 이후의 onNext 이벤트에 대해 처리가 된다. 이전의 onNext처리("Hello")는 x
+// 들어온 값에 대한 ">> 2 ~~~~" 출력을 실행하는 subject를 구독한 observer2
+let observer2 = subject.subscribe { print(">> 2", $0) }
+observer2.disposed(by: disposeBag)
+
+subject.onNext("Subject")
+// >>1, >>2 둘다 completed() 처리
+
+//subject.onCompleted()
+subject.onError(MyError.error)
+
+// completed(), onError() 등의 처리 이후, 해당 Subject의 새로운 구독자가 발생시, 해당 새로운 구독자, observer3에게도 해당 이벤트가 전달된다.
+let observer3 = subject.subscribe { print(">> 3", $0) }
+observer.disposed(by: disposeBag)
+
+// * 최초로 생성되는 시점 ~ 첫 구독이 시작되는 시기 사이에는 이벤트가 처리되지않고 사라진다.
+// -> 만약 이벤트가 사라지는것이 문제가 된다면? ReplaySubject, ColdObservable을 사용한다. #
+
+~~~
+
 
 <br>
 <br>
