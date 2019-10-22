@@ -239,11 +239,9 @@ Observable.from([1,2,3,4,5,6,7,8,9])
 
 <br>
 
-## Subject 
+# Subject 
 
 - Observable인 동시에 Observer
-
-<br> 
 
 ### Subject 종류
 
@@ -324,9 +322,13 @@ let observer3 = subject.subscribe { print(">> 3", $0) }
 observer.disposed(by: disposeBag)
 
 // * 최초로 생성되는 시점 ~ 첫 구독이 시작되는 시기 사이에는 이벤트가 처리되지않고 사라진다.
-// -> 만약 이벤트가 사라지는것이 문제가 된다면? ReplaySubject, ColdObservable을 사용한다. #
+// -> 만약 이벤트가 사라지는것이 문제가 된다면? ReplaySubject, ColdObservable을 사용한다.
 
 ~~~
+
+<BR>
+
+
 
 ### BehaviorSubject
 
@@ -335,6 +337,8 @@ observer.disposed(by: disposeBag)
 - 초기 생성된 생성값, 새로운 구독자가 생기는 순간 이벤트가 바로 전달된다.
 - 새로운 구독자가 발생할 경우 BehaviorSubject는 가장 최신의 이벤트를 전달한다.
   - 즉, BehaviorSubject는 구독자가 구독시 가장 최신의 이벤트만을 전달한다.
+
+
 
 ~~~ swift
 /// MARK: - Behavior Subject
@@ -372,7 +376,143 @@ b.onError(MyError.error)
 // completed(), onError() 처리 이후, 새로운 BehaviorSubject 구독자가 생길 시, 해당 구독자의 next 이벤트는 실행되지 않고, completed(), onError() 처리 된다.
 b.subscribe { print("BehaviorSubject3 >>", $0) }
 .disposed(by: disposeBag)
+
 ~~~
+
+<br>
+
+
+
+### ReplaySubject
+
+- BehavoirSubject가 구독자에게 단 하나의 최신 이벤트를 전달하는 반면, ReplaySubject는 구독자 구독 시, 특정 버퍼 크기의 최신 이벤트를 모두 구독자에게 전달할 수 있다. 
+- ReplaySubject는 종료 여부에 관계없이 구독자들에게 버퍼에 저장되어있는 이벤트를 새로운 구독자에게 전달한다.
+- 필요이상의 불필요한 퍼버 할당은 지양해야 한다. 
+
+~~~ swift
+/// MARK: - Replay Subject
+import UIKit
+import RxSwift
+import RxCocoa
+
+let disposeBag = DisposeBag()
+
+enum MyError: Error {
+    case error
+}
+
+// Buffer Size가 3인 ReplaySubject를 생성한다. 구독자 구독 시 최신 최대 3개의 이벤트를 전달할 수 있다.
+let replaySubject = ReplaySubject<Int>.create(bufferSize: 3)
+
+// ReplaySubject에 1~10의 값을 차례대로 next처리한다. 버퍼사이즈는 3이므로 최대 3개의 이벤트만을 저장할 수 있다.
+(1...10).forEach { replaySubject.onNext($0) }
+
+// 구독자가 해당 ReplaySubject를 구독 시, 최신 이벤트인 8,9,10이 출력된다.
+replaySubject.subscribe { print("Observer 1 >>", $0) }
+.disposed(by: disposeBag)
+
+// 새로운 구독이 발생해도 동일한 이벤트, 8,9,10을 전달받는다.
+replaySubject.subscribe { print("Observer 2 >>", $0) }
+.disposed(by: disposeBag)
+
+// ReplaySubject에 새로운 이벤트를 전달하면, 구독자들에게도 전달된다. (다른 Subject들도 동일)
+replaySubject.onNext(11)
+
+// 11 이벤트를 전달 받은 버퍼크기 3의 ReplaySubject는 9,10,11 값을 갖게 되므로 이후 새로운 구독자들이 구독 시, 9,10,11이 전달된다.
+replaySubject.subscribe { print("Observer 3 >>", $0) }
+    .disposed(by: disposeBag)
+
+replaySubject.onCompleted()
+//rs.onError(MyError.error)
+
+// * ReplaySubject는 종료 여부에 관계없이 구독자들에게 버퍼에 저장되어있는 이벤트를 새로운 구독자에게 전달한다.
+replaySubject.subscribe { print("Observer 4 >>", $0) }
+.disposed(by: disposeBag)
+
+~~~
+
+<br>
+
+### AsyncSubject
+
+- 다른 Subject와 이벤트 전달 시점의 차이가 있다. 
+- Completed 이벤트가 전달되기 전 까지는 어떠한 이벤트도 구독자에게 전달하지 않는다.
+- Completed 이벤트 전달 시 구독자에게 가장 최신의 Subject 이벤트를 전달한다. 
+  - 만약 subject가 이전까지 전달받은 이벤트가 없다면 별도의 이벤트 없이 completed 만 처리된다.
+  - Completed이벤트 전달 받기 전 Error 이벤트를 전달받으면 별도의 이벤트는 구독자들에게 전달되지 않는다. 
+
+~~~ swift
+/// MARK: - Async Subject
+import UIKit
+import RxSwift
+import RxCocoa
+
+let disposeBag = DisposeBag()
+
+enum MyError: Error {
+    case error
+}
+
+let subject = AsyncSubject<Int>()
+subject
+    .subscribe { print($0) }
+.disposed(by: disposeBag)
+
+// 아직 AsyncSubject로 completed 이벤트가 전달되지 않았으므로, 하단의 onNext(1...3) 이벤트는 구독자에게 전달되지 않는다.
+subject.onNext(1)
+subject.onNext(2)
+subject.onNext(3)
+
+// AsyncSubject에 completed 이벤트가 전달되는 순간의 가장 최신 이벤트를 구독자들에게 전달한다.
+// 가장 최신 이벤트인 '3'이 구독자에게 전달된다.
+//subject.onCompleted()
+
+// error 이벤트 전달 시, completed이벤트를 전달받지 못했으므로 별도의 이벤트는 구독자에게 전달되지 않는다.
+subject.onError(MyError.error)
+~~~
+
+<br>
+
+### Subject Relays
+
+- RxSwift는 두개의 Subject Relays를 제공한다. (RxCocoa 프레임워크를 통해 제공)
+  - PublishRelay, BehaviorRelay
+- 일반적인 Subject와의 가장 큰 차이점은 **SubjectRelay는 Next이벤트만을 전달**한다는 것이다.
+  - SubjectRelay(PublishRelay, BehaviorRelay)는 Completed, Error 이벤트는 전달받지도 전달하지도 않는다. 
+- 구독자가 Disposed 되기 전까지 종료없이 계속 이벤트를 처리한다 .
+- Subject Replay는 주로 UI 이벤트 처리에 활용된다.
+
+~~~ swift
+/// MARK: - Async Subject
+import UIKit
+import RxSwift
+import RxCocoa
+
+let disposeBag = DisposeBag()
+
+// PublishRelay의 생성방식은 PublishSubject와 동일하다.
+let publishRelay = PublishRelay<Int>()
+
+publishRelay.subscribe { print("1: \($0)") }
+.disposed(by: disposeBag)
+
+// SubjectRelay는 onNext메서드 대신 accept 메서드를 지원한다.
+publishRelay.accept(1)
+
+// BehaviorRelay의 BehaviorSubject와 생성 방식은 동일하다.
+let behaviorRelay = BehaviorRelay(value: 1)
+behaviorRelay.accept(2)
+// BehavoirRelay의 가장 최근 이벤트인 '2'가 구독자에게 전달된다.
+behaviorRelay.subscribe {
+    print("2: \($0)")
+}.disposed(by: disposeBag)
+
+// BehaviorRelay에 새로운 이벤트가 전달 될 때마다 구독자에게 최신 이벤트 1개가 전달된다.
+// BehaviorSubject와의 차이점은 Completed, Error 이벤트 전달받기/전달하기를 하냐, 안하냐 차이
+behaviorRelay.accept(3)
+
+~~~
+
 
 <br>
 <br>
