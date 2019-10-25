@@ -307,7 +307,56 @@ Observable.from([1,2,3,4,5,6,7,8,9])
     // completed
     ~~~
 
+- range
+
+  -  range(start: 1, count: 10) -> 1부터 시작에서 1씩 증가한 정수가 방출 된 뒤 complted 이벤트가 전달
+
+  -  range는 특정 값으로부터 증가시키면 특정 반복 방출을 실행하나 중간에 증가된 크기를 바꾸거나 감소하는 시퀀스는 생성 불가
+
+    - -> 이때는 대신 generate 를 사용한다.
+
+    ~~~swift
+    import RxSwift
+    import RxCocoa
+    let disposebag = DisposeBag()
+    // 1 ... 10 의 Int 값 방출
+    Observable.range(start: 1, count: 10)
+    .subscribe { print($0) }
+    .dispoesd(by: disposeBag)
+    ~~~
+
+- generate 
+
+  - range 보다 세부적인 sequence tasking 작업이 가능
+
+  - 세부적인 작업을 위한 parameter가 존재 
+
+    - initialState : 시작값을 전달
+    - condition : true르 리턴할때만 방출 아니면 complted 이벤트를 전달 및 종료
+    - scheduler: scheduler 설정
+    - iterate : 보통 값을 증가, 감소 시키는 등의 코드를 전달
+
+    ~~~swift
+    import RxSwift
+    import RxCocoa
+    import UIKit
     
+    let disposeBag = DisposeBag()
+    let red = "🍎"
+    let blue = "🥶"
+    
+    Observable.generate(initialState: 10, condition: { $0 >= 0 }, iterate: { $0 - 2 })
+        .subscribe { print($0) }
+        .disposed(by: disposeBag)
+    
+    Observable.generate(initialState: red, condition: { $0.count < 15 }, iterate: { $0.count.isMultiple(of: 2) ? $0+red : $0+blue})
+        .subscribe { print($0) }
+        .disposed(by: disposeBag)
+    ~~~
+
+<br><br>
+
+
 
 
 # Subject 
@@ -675,7 +724,6 @@ behaviorRelay.accept(3)
   ~~~
 
   
-<br>
 
 <br>
 <br>
