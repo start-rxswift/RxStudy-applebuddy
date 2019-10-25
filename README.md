@@ -237,7 +237,78 @@ Observable.from([1,2,3,4,5,6,7,8,9])
 // * 단, 연산자의 실행 순서에 따라 결과가 달라질 수 있음에 주의해야 한다.
 ~~~
 
-<br>
+<br><br>
+
+### 연산자 종류 
+
+- just 
+
+  - 하나의 항목을 방출하는 Observable을 생성 
+
+    ~~~ swift
+    // Operator, just 사용 예시
+    import UIKit
+    import RxSwift
+    
+    let disposeBag = DisposeBag()
+    let element = "😃"
+    
+    // element 항목을 방출하는 Observable 생성
+    Observable.just(element)
+      .subscribe { event in print(event) }
+      .disposed(by: disposeBag)
+    // 출력 예시)
+    // next(😃) 
+    // completed
+    
+    Observable.just([1,2,3])
+    .subscribe { event in print(event) }
+    .disposed(by: disposeBag)
+    // 출력 예시)
+    // next([1,2,3])
+    // completed
+    ~~~
+
+- of
+
+  - 배열을 차례대로 방출하는 Observable 생성
+
+    ~~~ swift
+    import RxSwift
+    Observable.if(1, 2, 3) 
+    .subscribe { element in print(element) }
+    .disposed(by: disposeBag)
+    // 출력 예시)
+    // next(1)
+    // next(3)
+    // next(3)
+    // completed
+    ~~~
+
+    
+
+  
+
+- from
+
+  - 배열에 포함된 요소를 하나씩 순서대로 방출하는 Observable 생성 
+
+    ~~~ swift
+    import RxSwift
+    
+    let arr = [1,2,3]
+    Observable.from(arr)
+    .subscribe { element in print(element) }
+    .disposed(by: disposeBag)
+    // 출력 예시)
+    // next(1)
+    // next(2)
+    // next(3)
+    // completed
+    ~~~
+
+    
+
 
 # Subject 
 
@@ -258,6 +329,7 @@ Observable.from([1,2,3,4,5,6,7,8,9])
 #### Subject Relay
 
 - Relay 이벤트는 next 이벤트만 받고 completed, error 이벤트는 받지 않는다. 
+
 - 주로 종료 없이 계속적으로 실행되는 이벤트를 처리할때 사용한다. 
 
 - PublishRelay
@@ -431,7 +503,9 @@ replaySubject.subscribe { print("Observer 4 >>", $0) }
 
 ~~~
 
-<br>
+<BR>
+
+
 
 ### AsyncSubject
 
@@ -469,6 +543,7 @@ subject.onNext(3)
 
 // error 이벤트 전달 시, completed이벤트를 전달받지 못했으므로 별도의 이벤트는 구독자에게 전달되지 않는다.
 subject.onError(MyError.error)
+
 ~~~
 
 <br>
@@ -513,6 +588,94 @@ behaviorRelay.accept(3)
 
 ~~~
 
+<br><br>
+
+
+
+## Scheduler
+
+- 일반적으로는 스레드처리에 GCD를 사용하는데 RxSwift에서는 Scheduler를 사용한다. 
+- 추상형 Context, 큰 그림으로 보면 GCD와 유사하고 규칙에따라 Scheduler를 사용하면 된다. 
+
+#### Scheduler의 사용
+
+- UI를 처리할때 GCD는 Main Queue를 사용했다면, Rx에선 MainScheduler를 사용
+
+- 백그라운드 처리 시 GCD는 Global Queue를 사용했다면, Rx에서 BackgroundScheduler를 사용
+
+- Serial Scheduler 
+
+  - CurrentThreadScheduler : 기본적 스케쥴러
+  - MainScheduler : UI처리 시 메인스레드 동작을 위해 사용
+  - SerialDispatchQueueScheduler
+
+- Concurrent Scheduler
+
+  - ConcurrentDispatchQueueScheduler
+  - OperationQueueScheduler : GCD가 아닌 OperationQueue를 사용
+
+- Test Scheduler : 테스트 목적의 스케쥴러
+
+- Custom Scheduler : 사용자 정의 스케쥴러
+
+- Scheduler, observeOn, subscribeOn 활용 예시)
+
+  ~~~swift 
+  import UIKit
+  import RxSwift
+  import RxCocoa
+  
+  // * 옵저버블이 생성되고 연산자가 호출되는 시점은 구독이 시작된 시점이 된다.
+  let disposeBag = DisposeBag()
+  
+  // Background Scheduler의 지정
+  let backgroundScheduler = ConcurrentDispatchQueueScheduler(queue: DispatchQueue.global())
+  
+  Observable.of(1,2,3,4,5,6,7,8,9,0)
+      .filter { num -> Bool in
+          print(Thread.isMainThread ? "Main Thread" : "Background Thread", ">> filter")
+          return num.isMultiple(of: 2) // of에서 방출하는 Observable 요소 중 2의 배수만을 필터링 한다.
+  } // map Operator를 background Scheduler로 동작하게 한다.
+  .observeOn(backgroundScheduler) // map연산자 이후에는 background Thread에서 동작함을 출력 결과를 통해 알 수 있다.
+  .map { num -> Int in
+      print(Thread.isMainThread ? "Main Thread" : "Background Thread", ">> map")
+      return num * 2 // 걸러진 짝수 값들을 각각 2배씩 맵핑처리한다. 이후 값들은 4,8,12,16 이 될 것이다.
+  }
+  //.subscribeOn(MainScheduler.instance) // subscrobeOn(MainScheduler.instance)는 Observable이 시작하는 시점에 어떤 스케쥴러를 사용할 지를 지정하는 것이다. 또한 호출하는 시점이 자유롭다. 
+  .observeOn(MainScheduler.instance) //-> 만약 하단의 subscribe시점에 스케쥴러를 지정하려면 subscribeOn대신, ovserveOn을 사용하면 된다.
+  .subscribe {
+      print(Thread.isMainThread ? "Main Thread" : "Background Thread", ">> subscribe")
+      print($0)
+  }
+  .disposed(by: disposeBag)
+  ~~~
+
+  
+
+#### ObserveOn
+
+- 이어지는 작업에 대해 사용할 스레드를 지정하는데 사용할 수 있다. 
+
+  ~~~swift
+  .observeOn(backgroundScheduler)
+  ~~~
+
+#### SubscribeOn
+
+- Observable이 시작하는 시점에 어떤 스케쥴러를 사용할 지를 지정한다.
+
+  - subscrobeOn(MainScheduler.instance)는 해당 시점에 메인스케쥴러를 사용하는 것이 아님 -> 이때는  observeOn을 사용함
+
+- 호출하는 시점이 자유롭다. (맨 위에 지정하나, 중간에 지정하나 본인의 역할에는 상관없음) 
+
+  - 만약 하단의 subscribe시점에 스케쥴러를 지정하려면 subscribeOn대신, observeOn을 사용하면 된다.
+
+  ~~~swift
+  .subscribeOn(MainScheduler.instance)
+  ~~~
+
+  
+<br>
 
 <br>
 <br>
