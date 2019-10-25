@@ -41,6 +41,8 @@ RxSwift의 입문 공부 기록
 - Next : 방출, Emission (Observer, Subscriber로 전달)
 - Error : 에러 발생시 전달, Observable 주기 끝에 실행, Notification
 - Completed : 성공적으로 실행 시 전달, Observable 주기 끝에 실행, Notification
+-  **Observable은 error, completed이벤트를 전달한 뒤엔 더이상 이벤트를 전달하지 않는다.**
+  - **Observable을 영원히 실행할 목적이 아니라면, onError, onComplted 둘 중 하나는 꼭 처리**해주어 Observable의 동작이 종료될 수 있도록 해야 한다.
 
 ### Observer
 
@@ -354,6 +356,137 @@ Observable.from([1,2,3,4,5,6,7,8,9])
         .disposed(by: disposeBag)
     ~~~
 
+- defered
+
+  - 특정 조건에 따라 Observable을 생성할 수 있게 해주는 Operator
+
+  - deferred 연산자를 사용하면 특정조건 (Condition)에 따라 Observable을 생성 시킬 수 있다.
+
+    ~~~swift
+    /// MARK: - Deferred
+    import UIKit
+    import RxSwift
+    
+    let disposeBag = DisposeBag()
+    let poker = ["❤️", "♦️", "♠️", "☘️"]
+    let emoji = ["😃", "😂", "🎃", "💀"]
+    var flag = true
+    
+    // 문자열을 방출하는 Observable, factory
+    let factory: Observable<String> = Observable.deferred {
+        flag.toggle() // toggle() 실행으로 true -> false로 flag값 변환
+        
+        if flag {
+            return Observable.from(poker)
+        } else { // flag == false로 emoji String이 순차적으로 from operator에 의해 방출
+            return Observable.from(emoji)
+        }
+    }
+    
+    factory
+        .subscribe { print($0) }
+        .disposed(by: disposeBag)
+    ~~~
+
+    
+
+- create
+
+  - create 연산자는 사용 할 Observable의 동작을 직접 구현하고자 할 때 사용할 수 있다.
+
+    ~~~swift
+    /// MARK: - Operator; Craete
+    //  - create 연산자는 Observable의 동작을 직접 구현하고자 할 때 사용할 수 있다.
+    import UIKit
+    import RxSwift
+    
+    let disposeBag = DisposeBag()
+    
+    enum MyError: Error {
+        case error
+    }
+    
+    // Obervable을 파라미터로 받아서 disposable을 반환하는 클로져를 전달
+    Observable<String>.create { (observer) -> Disposable in
+        guard let url = URL(string: "https://www.apple.com") else {
+            // Error 발생 시 Error이벤트를 전달하고 종료 -> error(error)
+            observer.onError(MyError.error) // 구독자에게 Error가 전달
+            // * Disposable.craete()가 아닌 Disposables.create()로 사용해야 한다.
+            return Disposables.create()
+        }
+        // url을 접근한 뒤 html을 가져와 문자열을 저장한다.
+        guard let html = try? String(contentsOf: url, encoding: .utf8) else {
+            // Error 발생 시 Error이벤트를 전달하고 종료 -> error(error)
+            observer.onError(MyError.error)
+            return Disposables.create()
+        }
+        
+        // 문자열 생성이 정상적으로 진행되었다면, 해당 Observable을 방출
+        observer.onNext(html)
+        observer.onNext("Will Be Completed")
+        observer.onCompleted()
+        
+        // ✭ Observable은 error, completed이벤트를 전달한 뒤엔 더이상 이벤트를 전달하지 않는다.
+        // Observable을 영원히 실행할 목적이 아니라면, onError, onComplted 둘 중 하나는 꼭 처리해주어 Observable의 동작이 종료될 수 있도록 해야 한다.
+        observer.onNext("After Completed")
+        return Disposables.create()
+    }
+        .subscribe { print($0) }
+        .disposed(by: disposeBag)
+    
+    ~~~
+
+- empty 
+
+  - 어떠한 요소도 방출하지 않는 Operator
+  - 어떠한 동작도 진행않고 종료하고자 할 때 사용할 수 있다. 
+
+  ~~~ swift
+  /// MARK: - Empty, Error
+  //  - 어떠한 요소도 방출하지 않는 Operator, Empty/Error
+  
+  import UIKit
+  import RxSwift
+  
+  let disposeBag = DisposeBag()
+  
+  /// MARK: empty
+  //  - 요소의 형식은 중요하지 않다. 요소를 방출하지 않기 때문이다.
+  //  - 옵저버가 아무런 동작없이 종료해야할 때 사용할 수 있다.
+  Observable<Void>.empty()
+      .subscribe { print($0) }
+      .disposed(by: disposedBag)
+  ~~~
+
+
+
+- error
+
+  - 지정한 Error 이벤트를 전달하고 종료하는 Observable을 생성한다.
+  - Error처리를 할때 사용한다.
+
+  ~~~swift
+  /// MARK: - Operator; Error
+  import UIKit
+  import RxSwift
+  
+  let disposeBag = DisposeBag()
+  
+  enum MyError: Error {
+      case error
+  }
+  
+  // - error이벤트를 전달하고 종료하는 Observable을 생성한다.
+  // - Error처리를 할때 사용한다.
+  Observable<Void>.error(MyError.error)
+      .subscribe {. rint($0) }
+      .disposed(by: disposeBag)
+  // 해당 Observable은 error 이벤트가 전달되고 종료된다.
+  
+  ~~~
+
+  
+
 <br><br>
 
 
@@ -552,7 +685,7 @@ replaySubject.subscribe { print("Observer 4 >>", $0) }
 
 ~~~
 
-<BR>
+<br><br>
 
 
 
@@ -723,7 +856,7 @@ behaviorRelay.accept(3)
   .subscribeOn(MainScheduler.instance)
   ~~~
 
-  
+<br>
 
 <br>
 <br>
