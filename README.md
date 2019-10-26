@@ -770,8 +770,7 @@ behaviorRelay.accept(3)
 
 ~~~
 
-<br><br>
-
+<br>
 
 
 ## Scheduler
@@ -856,6 +855,36 @@ behaviorRelay.accept(3)
   .subscribeOn(MainScheduler.instance)
   ~~~
 
+<br>
+
+## RxCocoa
+- Cocoa Framework + Reactive Library
+- Apple 에서 제공하는 모든 플랫폼에서 제공
+- 'RxSwift'와 별개로 pod 'RxCocoa' 식으로 pod file에 개별적으로 추가하여 사용 가능
+  - 따라서 RxSwift, RxCocoa는 개별적으로 import 처리 해야함.
+- 기존 Cocoa Framework에 Rx속성을 추가함
+
+<br>
+
+### Binding
+- 데이터를 UI에 표현할 때 사용한다.
+- 크래시가 발생할 수 있는 error 이벤트를 전달받지 않는다.
+
+<br>
+
+### Traits
+- UI에 특화된 Observable
+- UIBinding에서 데이터 생산자의 역할을 담당
+- 구독자에게 Error 이벤트를 전달하지 않음
+- Traits의 사용은 전적으로 선택적이다.
+  - 하지만 Traits의 사용은 매우 중요하다.
+    - traits를 적극적으로 활용하자!
+- 네가지 Traits를 제공
+  - Control Property
+  - ControlEvent
+  - Driver
+  - Signal
+  
 <br>
 
 <br>
