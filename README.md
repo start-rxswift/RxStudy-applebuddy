@@ -882,7 +882,32 @@ behaviorRelay.accept(3)
 - 네가지 Traits를 제공
   - Control Property
   - ControlEvent
-  - Driver
+  - **Driver**
+    - UI처리에 사용, asDriver와 함께 사용한다.
+    - Driver는 모든 작업인 메인스레드에서 실행되는 것을 보장한다. 
+    - asDriver를 사용할때는 bind(to:) 메서드 대신 drive() 메서드를 사용한다. 
+    ~~~ swift
+    let result = inputField.tx.text.asDriver()
+	.flatMapLatest {
+	vallidateText($0)
+	.asDriver(onErrorJustReturn: false)
+    }
+    
+    result
+	.map { $0 ? "OK" : "Error" }
+	.drive(resultLabel.tx.text)
+	.disposed(by: disPoseBag)
+	
+    result
+    	.map { $0 ? UIColor.blue : UIColor.red }
+	.drive(resultLabel.tx.backgroundColor)
+	.disposed(by: disposeBag)
+    
+    result
+    	.drive(sendButton.tx.isEnabled)
+	.disposed(by: disposeBag)
+	
+    ~~~
   - Signal
   
 <br>
