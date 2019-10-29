@@ -271,6 +271,8 @@ Observable.from([1,2,3,4,5,6,7,8,9])
     // completed
     ~~~
 
+<br>
+
 - of
 
   - 배열을 차례대로 방출하는 Observable 생성
@@ -288,7 +290,7 @@ Observable.from([1,2,3,4,5,6,7,8,9])
     ~~~
 
     
-
+<br>
   
 
 - from
@@ -309,6 +311,8 @@ Observable.from([1,2,3,4,5,6,7,8,9])
     // completed
     ~~~
 
+<br>
+
 - range
 
   -  range(start: 1, count: 10) -> 1부터 시작에서 1씩 증가한 정수가 방출 된 뒤 complted 이벤트가 전달
@@ -326,6 +330,8 @@ Observable.from([1,2,3,4,5,6,7,8,9])
     .subscribe { print($0) }
     .dispoesd(by: disposeBag)
     ~~~
+
+<br>
 
 - generate 
 
@@ -355,6 +361,8 @@ Observable.from([1,2,3,4,5,6,7,8,9])
         .subscribe { print($0) }
         .disposed(by: disposeBag)
     ~~~
+
+<br>
 
 - defered
 
@@ -388,7 +396,7 @@ Observable.from([1,2,3,4,5,6,7,8,9])
         .disposed(by: disposeBag)
     ~~~
 
-    
+<br>    
 
 - create
 
@@ -436,6 +444,8 @@ Observable.from([1,2,3,4,5,6,7,8,9])
     
     ~~~
 
+<br>
+
 - empty 
 
   - 어떠한 요소도 방출하지 않는 Operator
@@ -458,6 +468,7 @@ Observable.from([1,2,3,4,5,6,7,8,9])
       .disposed(by: disposedBag)
   ~~~
 
+<br>
 
 
 - error
@@ -485,11 +496,125 @@ Observable.from([1,2,3,4,5,6,7,8,9])
   
   ~~~
 
+<br>
   
+- ignoreElement
+  - traits중 하나인 Completable을 반환하는 Operator
+  - Completable은 completed, error 와 같은 실패/성공에만 관심있음. next이벤트는 무시하는 놈임.
+~~~ swift 
+import UIKit
+import RxSwift
 
-<br><br>
+let disposeBag = DisposeBag()
+let fruits = ["apple", "grape", "orange", "staawberry", "banana"]
+
+Observable.from(fruits)
+.ignoreElements() // .ignoreElements 연산자의 사용으로, 하단의 출력이 안됨. -> "completed"만 출력 됨
+.subscribe { print($0) }
+.disposed(by: disposeBag)    
+~~~
+    
+<br>
+    
+- elementAt 
+  - 특정 인덱스의 요소를 방출해주는 Operator
+~~~ swift 
+import UIKit
+import RxSwift
+
+let disposeBag = DisposeBag()
+let fruits = ["apple", "grape", "orange", "staawberry", "banana"]
+
+Observable.from(fruits)
+    .elementAt(1) // 특정 인덱스의 요소만 방출 후(1 인덱스의 grape 방출), completed 이벤트가 전달된다.
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+~~~
+
+<br>
+
+- filter Operator
+  - filter 클로저 내 조건을 충족한 경우의 요소만 방출한다. 아래의 경우 2의 배수만 방출한다.
+~~~ swift
+import UIKit
+import RxSwift
+
+let disposeBag = DisposeBag()
+let numbers = [1,2,3,4,5,6,7,8,9,10]
+
+// filter 클로저 내 조건을 충족한 경우의 요소만 방출한다. 아래의 경우 2의 배수만 방출한다.
+Observable.from(numbers)
+    .filter { $0.isMultiple(of: 2) } 
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+~~~
+
+- skip
+  - 지정한 수만큼의 요소를 무시하고 그 이후의 요소를 방출하는 Operator
+~~~ swift 
+import UIKit
+import RxSwift
+
+let disposeBag = DisposeBag()
+let numbers = [1,2,3,4,5,6,7,8,9,0]
+
+// MARK: skip operator
+// - 지정된 수만큼 무시, 이후의 요소만 방출하는 Operator
+Observable.from(numbers)
+    .skip(3) // 처음 세개의 요소는 무시하고 4부터 방출
+    .subscribe { print($0) }
+    .disposed(by: dispos
+~~~
+
+<br>
+
+- skipWhile
+  - 클로져를 매개변수로 받아 클로저 내 true 리턴 후부터 요소를 방출
+~~~ swift
+import UIKit
+import RxSwift
+
+let disposeBag = DisposeBag()
+let numbers = [1,2,3,4,5,6,7,8,9,0]
 
 
+// MARK: skipWhile
+// - 클로져를 매개변수로 받음, 클로저 내 true 리턴 후부터 방출
+Observable.from(numbers)
+    .skipWhile { !$0.isMultiple(of: 2)} // 2의 배수인 2가 나와 true가 되는 시점부터 방출을 시작한다. 한번의 true 이후에는 조건판별에 상관없이 계속 방출한다.
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+~~~
+
+<br>
+
+- skipUntil
+  - 다른 Observable을 매개변수로 받는 Operator
+  - 매개변수로 받은 Observable이 next 이벤트를 전달하기 전 까지 원본 Observable이 전달하는 이벤트를 무시한다.
+    - 이러한 skipUntil Operator의 특성때문에 매개변수로 전달받은 Observable을 trigger라고도 부른다.
+~~~ swift
+import UIKit
+import RxSwift
+
+let disposeBag = DisposeBag()
+/// MARK: - skipUntil
+//  - 다른 Observable을 매개변수로 받음
+//  - 매개변수로 받은 Observable이 next 이벤트를 전달하기 전 까지 원본 Observable이 전달하는 이벤트를 무시한다.
+//.   - 이러한 특성때문에 매개변수로 전달받은 Observable을 trigger라고도 부른다.
+let subject = PublishSubject<Int>()
+let trigger = PublishSubject<Int>()
+subject.skipUntil(trigger)
+    .subscribe { print($0) }
+.disposed(by: disposeBag)
+
+subject.onNext(1)
+subject.onNext(2)
+trigger.onNext(0) // 트리거 옵저바블이 next 이벤트를 수행한 뒤에야
+subject.onNext(3) // 원본 옵저바블의 next이벤트가 효력을 발휘한다.
+~~~
+
+<br>
+<br>
 
 
 # Subject 
