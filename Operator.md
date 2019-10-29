@@ -559,3 +559,35 @@ subject.onError(MyError.error)
 ~~~
 
 <br>
+
+### distinctUntilChanged
+  - 동일한 항목이 연속적으로 방출하지 않도록 하는 Operator
+~~~ swift
+import UIKit
+import RxSwift
+
+let disposeBag = DisposeBag()
+let numbers = [1,1,3,3,5,6,7,7,7,10]
+
+Observable.from(numbers)
+    .distinctUntilChanged() // 동일한 값의 연속적 값을 방지함
+    .subscribe { print($0) } // 1,3,5,6,7,10 출력
+    .disposed(by: disposeBag)
+~~~
+
+<br>
+
+### debounce
+- 두개의 매개변수를 받는다.(RxTimeInterval, SchedulerType)
+- next 이벤트 이후 지정 시간 내에 방출이 이루어지ㅣ면 다시 타이머를 초기화, 지정 시간 동안 다시 기다린다. 
+- 지정 시간(RxTimeInterval) 동안 next이벤트가 발생하지 않으면, 현재까지 받은 요소 중 가장 최신 값을 구독자에게 전달한다. 
+- **사용자의 문자열 입력 기능 구현 시 유용하게 사용 가능하다**
+  - 사용자의 연속 입력 등의 이벤트 중 불필요한 검색 정보 요충을 처단할 수 있다. 
+  
+### throttle
+- 3개의 매개변수를 받으며 이중 매개변수 하나(latest)는 안받으면 default값(true)으로 설정된다. 
+- throttle 매개변수 : (RxTimeInterval, latest: Bool, Scheduler)
+- latest값의 default값은 별도로 지정하지 않을 시, true로 설정된다. 
+  - true 설정 시) 지정 된 주기 간격 기준, 가장 최근에 방출한 next 이벤트를 구독자에게 전달한다. 
+  - false 설정 시) 지정 된 주기 간격 주기 종료 직후 가장 처음으로 발생하는 next 이벤트를 구독자에게 전달한다.
+  
