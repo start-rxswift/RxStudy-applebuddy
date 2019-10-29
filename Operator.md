@@ -11,7 +11,7 @@
 
 <br>
 
-### 연산자의 특징
+## 연산자의 특징
 
 - 대부분의연산자는 Observable상에서 동작하며, Observable을 리턴한다. 
 - Observable을 리턴하기 때문의 두개 이상의 다수의 Operator를 동시에 사용할 수 있다. 
@@ -38,9 +38,9 @@ Observable.from([1,2,3,4,5,6,7,8,9])
 
 <br><br>
 
-### 연산자 종류 
+## 연산자 종류 
 
-- just 
+### just 
 
   - 하나의 항목을 방출하는 Observable을 생성 
 
@@ -90,7 +90,7 @@ Observable.if(1, 2, 3)
 <br>
   
 
-- from
+### from
 
   - 배열에 포함된 요소를 하나씩 순서대로 방출하는 Observable 생성 
 
@@ -110,7 +110,53 @@ Observable.from(arr)
 
 <br>
 
-- range
+### single
+- 원본 요소 중 첫번째 요소만 방출, 하나의 요소만 방출하는 것을 보장한다. 
+  - 만약 하나 이상이 요소를 방출하려 할 시 Error 이벤트 발생
+- void / predicate(조건부 클로저) 형태의 사용이 가능하다. 
+- predicate 방식으로 조건부 설정 시 sequence 요소들 중 해당 조건이 단 하나일 경우 이상없이 방출이 진행된다. 
+- 0개 혹은 두개 이상의 요소를 single을 사용해 방출하려할 시 Error 이벤트 발생
+
+~~~ swift 
+import UIKit
+import RxSwift
+
+let disposeBag = DisposeBag()
+let numbers = [1,2,3,4,5,6,7,8,9,10]
+
+// single() 앞에 하나의 요소, 1만 있으므로 문제없이 하나의 요소 1을 방출한다.
+Observable.just(1)
+    .single()
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// 2개 이상의 요소가 있을 경우 error 이벤트가 발생한다.
+Observable.from(numbers)
+    .single() // 2개이상의 sequence에 single() 사용 시 에러발생 "Sequence contains more than one element."
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// single 연산자에 predicate 방식의 조건을 두어 해당 조건에 맞는 요소가 단 하나일 경우 문제없이 방출한다.
+Observable.from(numbers)
+    .single { $0 == 5 }
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// subject에 사용할 경우, 하나의 요소만 방출되어야 문제없이 completed이벤트를 발생한다.
+let subject = PublishSubject<Int>()
+
+subject.single()
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+subject.onNext(100)
+//subject.onNext(80) // "Sequence contains more than one element."
+subject.onCompleted()
+~~~
+
+<br>
+
+### range
 
   -  range(start: 1, count: 10) -> 1부터 시작에서 1씩 증가한 정수가 방출 된 뒤 complted 이벤트가 전달
 
@@ -130,7 +176,7 @@ Observable.range(start: 1, count: 10)
 
 <br>
 
-- generate 
+### generate 
 
   - range 보다 세부적인 sequence tasking 작업이 가능
 
@@ -161,7 +207,7 @@ Observable.generate(initialState: red, condition: { $0.count < 15 }, iterate: { 
 
 <br>
 
-- defered
+### defered
 
   - 특정 조건에 따라 Observable을 생성할 수 있게 해주는 Operator
 
@@ -195,7 +241,7 @@ factory
 
 <br>    
 
-- create
+### create
 
   - create 연산자는 사용 할 Observable의 동작을 직접 구현하고자 할 때 사용할 수 있다.
 
@@ -243,7 +289,7 @@ Observable<String>.create { (observer) -> Disposable in
 
 <br>
 
-- empty 
+### empty 
 
   - 어떠한 요소도 방출하지 않는 Operator
   - 어떠한 동작도 진행않고 종료하고자 할 때 사용할 수 있다. 
@@ -268,7 +314,7 @@ Observable<String>.create { (observer) -> Disposable in
 <br>
 
 
-- error
+### error
 
   - 지정한 Error 이벤트를 전달하고 종료하는 Observable을 생성한다.
   - Error처리를 할때 사용한다.
@@ -295,7 +341,7 @@ Observable<String>.create { (observer) -> Disposable in
 
 <br>
   
-- ignoreElement
+### ignoreElement
   - traits중 하나인 Completable을 반환하는 Operator
   - Completable은 completed, error 와 같은 실패/성공에만 관심있음. next이벤트는 무시하는 놈임.
 ~~~ swift 
@@ -313,7 +359,7 @@ Observable.from(fruits)
     
 <br>
     
-- elementAt 
+### elementAt 
   - 특정 인덱스의 요소를 방출해주는 Operator
 ~~~ swift 
 import UIKit
@@ -330,7 +376,7 @@ Observable.from(fruits)
 
 <br>
 
-- filter Operator
+### filter Operator
   - filter 클로저 내 조건을 충족한 경우의 요소만 방출한다. 아래의 경우 2의 배수만 방출한다.
 ~~~ swift
 import UIKit
@@ -346,7 +392,7 @@ Observable.from(numbers)
     .disposed(by: disposeBag)
 ~~~
 
-- skip
+### skip
   - 지정한 수만큼의 요소를 무시하고 그 이후의 요소를 방출하는 Operator
 ~~~ swift 
 import UIKit
@@ -365,7 +411,7 @@ Observable.from(numbers)
 
 <br>
 
-- skipWhile
+### skipWhile
   - 클로져를 매개변수로 받아 클로저 내 true 리턴 후부터 요소를 방출
 ~~~ swift
 import UIKit
@@ -385,7 +431,7 @@ Observable.from(numbers)
 
 <br>
 
-- skipUntil
+### skipUntil
   - 다른 Observable을 매개변수로 받는 Operator
   - 매개변수로 받은 Observable이 next 이벤트를 전달하기 전 까지 원본 Observable이 전달하는 이벤트를 무시한다.
     - 이러한 skipUntil Operator의 특성때문에 매개변수로 전달받은 Observable을 trigger라고도 부른다.
@@ -412,7 +458,7 @@ subject.onNext(3) // 원본 옵저바블의 next이벤트가 효력을 발휘한
 
 <br>
 
-- take
+### take
   - 처음 지정한 갯수만큼 요소를 방출, 이후의 요소는 무시하는 Operator
   - next 이벤트를 제외한 completed, error 이벤트에는 영향을 주지 않는다.
 ~~~ swift 
@@ -430,7 +476,7 @@ Observable.from(numbers)
 
 <br>
 
-- takeWhile
+### takeWhile
   - 매개변수로 클로져를 받는다. 
   - 매개변수 클로져 내 조건이 성립하는 동안 방출한다.
   - 만약 조건이 false가 반환되면 이후에는 조건여하에 상관없이 방출을 하지 않는다. 
@@ -449,7 +495,7 @@ Observable.from(numbers)
 
 <br>
 
-- takeUntil
+### takeUntil
   - 다른 Observable을 매개변수로 받는다. 
   - 매개변수 Observable(trigger)가 next 이벤트를 실행하기 전까지 요소를 방출한다. 
   - Observable(trigger)가 next이벤트 실행 시 completed 이벤트를 호출하고, 더이상 요소를 방출하지 않는다. 
@@ -479,7 +525,7 @@ subject.onNext(3) // 3은 방출하지 않는다.
 
 <br>
 
-- takeLast
+### takeLast
   - 정수를 매개변수로 받아 Observable을 받환한다. 
   - 마지막 값들 중 매개변수 정수값 만큼의 값을 버퍼에 저장 후 방출을 지연한다.
     - 방출은 해당 subject가 completed 이벤트를 발생할 때 진행 된다. 
