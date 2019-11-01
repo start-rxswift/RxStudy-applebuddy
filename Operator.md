@@ -625,3 +625,85 @@ subject.onCompleted()
 
 <br>
 
+### map
+- 클로져를 매개변수로 받아 Observable값들을 순차적으로 맵핑한다. 
+~~~ swift
+/// MARK: - map; Operator
+// 클로저를 파라미터로 받는 연산자
+// Observable 요소의 값들을 맵핑해주는 연산자.
+import RxSwift
+import RxCocoa
+
+let disposeBag = DisposeBag()
+let skills = ["Swift", "SwiftUI", "RxSwift"]
+
+Observable.from(skills)
+    .map { "Hello, \($0)" }
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+~~~
+
+<br>
+
+### flatMap
+- Observable 값을 맵핑하여 하나의 Observable 스트림을 반환하는 연산자 
+- 변환된 Observable은 값이 갱신될때마다 그 항목을 구독자에게 전달한다. 
+
+~~~ swift 
+/// MARK: - flatMap; Operator
+// 마블을 맵핑하여 Observable 스트림형태로 반환하는 연산자
+
+import RxSwift
+import RxCocoa
+
+let disposeBag = DisposeBag()
+let a = BehaviorSubject(value: 1)
+let b = BehaviorSubject(value: 2)
+
+let subject = PublishSubject<BehaviorSubject<Int>>()
+
+subject // flatMap으로 맵핑 된 새로운 Observable은 항목이 업데이트 될 때마다 새로운 항목을 방출한다.
+    .flatMap { $0.asObservable() }
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+subject.onNext(a)
+subject.onNext(b)
+b.onNext(22) // Observable 항목이 최신화 되며 구독자에게 새로운 항목이 전달 된다.
+~~~
+
+<br>
+
+### flatMapFirst / flatMapLatest
+- flatMap 연산자와 반환, 매개변수 형태는 동일
+- flatMapFirst는 맨 처음 mapping으로 변환한 Observable이 방출하는 이벤트만 구독자에게 전달한다. 
+- flatMapLatest는 가장 최근(가장 마지막) mapping으로 변환한 Observable이 방출하는 이벤트만 구독자에게 전달한다. 
+~~~ swift 
+/// MARK: - flatMapFirst / flatMapLatest : Operator
+// - 원본 Observable이 방출하는 항목을 Observable로 변환
+// - flatMap과 반환, 매개변수 동일
+
+import RxSwift
+import RxCocoa
+
+let disposeBag = DisposeBag()
+let a = BehaviorSubject(value: 1)
+let b = BehaviorSubject(value: 2)
+
+let subject = PublishSubject<BehaviorSubject<Int>>()
+
+subject // flatMap으로 맵핑 된 새로운 Observable은 항목이 업데이트 될 때마다 새로운 항목을 방출한다.
+    .flatMapFirst { $0.asObservable() }
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// flatMapFirst는 첫번째 변환된 Observable이 방출하는 항목만 구독자에게 전달
+subject.onNext(a)
+subject.onNext(b) // 첫번째 이후의 방출한 항목은 무시한다.
+a.onNext(11) // 맨 처음 변환된 Observable인 a만 방출이 유효
+b.onNext(12)
+
+// ✓ flatMapLatest 는 flatMapFirst와 반대로 가장 최근의 변환한 Observable의 방출 항목만 구족자에게 전달
+~~~
+
+<br>
