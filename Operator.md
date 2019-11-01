@@ -584,6 +584,8 @@ Observable.from(numbers)
 - **사용자의 문자열 입력 기능 구현 시 유용하게 사용 가능하다**
   - 사용자의 연속 입력 등의 이벤트 중 불필요한 검색 정보 요충을 처단할 수 있다. 
   
+<br>
+
 ### throttle
 - 3개의 매개변수를 받으며 이중 매개변수 하나(latest)는 안받으면 default값(true)으로 설정된다. 
 - throttle 매개변수 : (RxTimeInterval, latest: Bool, Scheduler)
@@ -591,3 +593,35 @@ Observable.from(numbers)
   - true 설정 시) 지정 된 주기 간격 기준, 가장 최근에 방출한 next 이벤트를 구독자에게 전달한다. 
   - false 설정 시) 지정 된 주기 간격 주기 종료 직후 가장 처음으로 발생하는 next 이벤트를 구독자에게 전달한다.
   
+<br>
+
+### toArray
+- 별도의 매개변수 x, Single 타입을 반환하는 연산자
+- completed 이벤트 전까지 next 이벤트들을 방출하지 않음
+- completed 이벤트가 발생하면 지금까지의 next 이벤트 요소들을 한 배열에 담아 방출함
+~~~ swift 
+/// MARK: - toArray; Operator
+//  - 특별한 매개변수를 받지않으며 Single을 반환하는 연산자
+import UIKit
+import RxSwift
+
+let disposeBag = DisposeBag()
+let numbers = [1,2,3,4,5,6,7,8,9,0]
+
+let subject = PublishSubject<Int>()
+
+subject
+.toArray()
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// completed 이벤트 전까지 요소는 구독자에게 전달되지 않음
+subject.onNext(1)
+subject.onNext(2)
+// completed 이벤트가 실행되고 나서 그동안의 요소를 배열에 담아 방출함
+// [1,2]
+subject.onCompleted()
+~~~
+
+<br>
+
