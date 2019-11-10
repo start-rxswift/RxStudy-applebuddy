@@ -707,3 +707,30 @@ b.onNext(12)
 ~~~
 
 <br>
+
+### Buffer 
+- 특정 주기동안 옵저버블이 방출하는 항목을 수집하여 배열로 방출한다. 
+- 매개변수 : 버퍼의 최대 시간길이(timeSpan), 버퍼 크기 카운트(count, 꽉 차면 바로 배열로 방출)
+- 만약 지정한 timeSpan 기간 동안 버퍼가 차버린다면? 
+  - -> 그 즉시 해당 버퍼는 방출되고 다시 버퍼 시간을 체크 
+~~~ swift 
+/// MARK: - Buffer : Operator
+// 특정 주기동안 옵저버블이 방출하는 학목을 수집하여 배열로 리턴한다.
+// 버퍼의 최대 시간길이, 버퍼 카운트 등을 매개변수로 받는다.
+import RxSwift
+
+let disposeBag = DisposeBag()
+
+// 2초동안 누적된 버퍼 (buffer(timeSpan: .seconds(2), count: 3, scheduler: MainScheduler.instance)) 를 계속 방출하지않고 최초 5번까지만 방출한다 (take(5)).
+
+// 만약 지정한 timeSpan 기간 동안 버퍼가 차버린다면?? -> 버퍼가 꽉 차는 즉시 해당 버퍼를 방출한다!
+Observable<Int>.interval(
+    .seconds(1),
+    scheduler: MainScheduler.instance)
+    .buffer(timeSpan: .seconds(5), count: 3, scheduler: MainScheduler.instance)
+    .take(5)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+~~~
+
+<br>
