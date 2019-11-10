@@ -763,3 +763,44 @@ Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
 
 <br>
 
+### GroupBy : Operator
+- 옵저버블이 방출하는 요소를 원하는 기준에 따라 그룹핑 하고자 할 때 사용한다. 
+- 주로 toArray, flatMap과 함께 사용하면 그룹핑된 옵저버블 요소를 배열로 만들어 사용하곤 한다. 
+
+~~~ swift 
+/// MARK: - GroupBy : Operator
+
+import RxSwift
+
+let disposeBag = DisposeBag()
+let words = ["apple", "Banana", "Orange", "Cucumber", "WaterMelon", "Peach"]
+
+// 문자열 길이를 기준으로 groupBy를 사용 시, 문자열 길이에 따른 옵저버블 목록이 콘솔에 출력한다.
+//Observable.from(words)
+//    .groupBy { $0.count }
+//    .subscribe(onNext: { groupedObservable in
+//        // 문자열 길이에 따라 그룹핑 된 키값, 정보를 콘솔에 출력한다.
+//        print("== \(groupedObservable.key)")
+//        groupedObservable.subscribe { print(" \($0)") }
+//    })
+//    .disposed(by: disposeBag)
+
+// MARK: - flatMap, toArray의 사용
+// - flatMap, toArray를 사용해 문자열 길이 기준으로 그룹핑 된 요소의 값을 출력한다.
+Observable.from(words)
+    .groupBy { $0.count }
+    .flatMap { $0.toArray() }
+    .subscribe {print($0) }
+    .disposed(by: disposeBag)
+
+// * 첫번째 문자를 기준으로 그룹핑 한 상태
+Observable.from(words)
+.groupBy { $0.first ?? Character(" ") }
+.flatMap { $0.toArray() }
+.subscribe {print($0) }
+.disposed(by: disposeBag)
+~~~
+
+<br>
+
+
