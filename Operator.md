@@ -734,3 +734,32 @@ Observable<Int>.interval(
 ~~~
 
 <br>
+
+### Window : Operator
+- 특정 시간동안 옵저버블이 방출하는 옵저버블, Inner Observable을 방출한다. 
+  - Inner Observable은 체크시간과 관계없이 최대 버퍼크기에 도달시 방출이 된다. 
+  - 최대 체크시간이 도달 시 현재 Inner Observable 배열을 방출한다. 
+  - 매개변수 : 체크시간간격, 분해할 최대옵저버블 항목 수, 스케쥴러
+  
+/// MARK: - Window; Operaotr
+// 옵저버블이 방출하는 옵저버블을 방출한다. (In a Observable)
+// Buffer와 동일하게 최대 버퍼크기에 도달 시 체크 시간과 상관없이 옵저바블을 방출하는 옵저바블(Inner Observable)을 방출한다.
+// 매개변수 : 체크 시간 간격, 분해할 최대항목수, 스케쥴러
+// * 콘솔에 출력되는 RxSwift.AddRef<Swift.Int> 는 옵저버블이라는 것만 이해하면 문제 없음
+~~~ swift 
+import RxSwift
+
+let disposeBag = DisposeBag()
+Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+    .window(timeSpan: .seconds(5), count: 3, scheduler: MainScheduler.instance)
+    .take(5)
+    .subscribe { print($0)
+        if let observable = $0.element {
+            observable.subscribe { print("inner: ", $0) }
+        }
+    }
+    .disposed(by: disposeBag)
+~~~
+
+<br>
+
