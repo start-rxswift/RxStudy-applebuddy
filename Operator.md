@@ -803,4 +803,34 @@ Observable.from(words)
 
 <br>
 
+### Interval
+- disposed 처리 전가지 일정 주기에 맞게 방출을 진행한다. 
+- FixedWidthInteger 형식의 정수형 요소를 취급할 수 있다. 
+- 새로운 구독자가 생기연 그에 따른 새로운 타이머가 실행된다. 
+- 매개변수 : 반복주기, 방출에 사용할 스케쥴러
+~~~ swift 
+/// MARK: - Interval : Operator
+import RxSwift
+
+// 1초마다 1씩 증가하는 요소를 방출한다.
+let disposeBag = DisposeBag()
+let interval = Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+
+let subscription = interval.subscribe { print("1 >> \($0)") }
+// 비동기 방식으로 5초 뒤 구독을 disposed 처리하기 위한 코드
+DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+    subscription.dispose()
+}
+
+var subscription2: Disposable?
+DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+    // 새로운 구독 시에는,
+    subscription2 = interval.subscribe { print("2 >> \($0)") }
+}
+
+DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+    // 7 초 후 disposed 처리
+    subscription2?.dispose()
+}
+~~~ 
 
