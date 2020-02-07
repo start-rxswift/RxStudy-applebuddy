@@ -20,9 +20,29 @@
 //  THE SOFTWARE.
 //
 
-import UIKit
+// MARK: Control Event, Control Property
+
+// Control Property 는 제네릭 구조체로 선언되어있다.
+// Control Property는 특별한 옵저바블이자 특별한 옵저버이다.
+
+/*
+ public protocol ControlPropertyType: ObservableType, ObserverType {
+ // ...
+ }
+
+ public struct ControlProperty<PropertyType> : ControlPropertyType {
+ // ...
+ }
+ */
+
+// - UI Control
+//  - UI Control을 상속받는 UI들은 다양한 이벤트를 전달한다.
+//
+// - ControlEventType은 옵저버블역할만 수행하며, 옵저버로서의 역할은 수행하지 않는다.
+
 import RxCocoa
 import RxSwift
+import UIKit
 
 class BindingCocoaTouchViewController: UIViewController {
     @IBOutlet var valueLabel: UILabel!
@@ -30,7 +50,7 @@ class BindingCocoaTouchViewController: UIViewController {
     @IBOutlet var valueField: UITextField!
 
     let disposeBag = DisposeBag()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 

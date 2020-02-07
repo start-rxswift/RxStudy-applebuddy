@@ -36,13 +36,13 @@ class BindingRxCocoaViewController: UIViewController {
 
         valueLabel.text = ""
         valueField.becomeFirstResponder()
-        
+
         // 메인스레드 동작방법 1)
 //                 bind를 통해 rx UI를 메인스레드에서 간편하게 동작시킬 수 있다.
         valueField.rx.text
             .bind(to: valueLabel.rx.text)
             .disposed(by: disposeBag)
-        
+
         // 메인스레드 동작방법 2) DispatchQueue 사용
 //        valueField.rx.text
 //            .subscribe(onNext: { [weak self] str in
@@ -51,8 +51,8 @@ class BindingRxCocoaViewController: UIViewController {
 //                }
 //            })
 //            .disposed(by: disposeBag)
-                
-                // 메인스레드 동작방법 3) observeOn의 사용
+
+        // 메인스레드 동작방법 3) observeOn의 사용
 //                valueField.rx.text
 //                    .observeOn(MainScheduler.instance)
 //                    .subscribe(onNext: { [weak self] str in
