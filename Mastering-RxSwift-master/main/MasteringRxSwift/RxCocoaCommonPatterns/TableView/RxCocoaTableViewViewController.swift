@@ -113,7 +113,7 @@ class RxCocoaTableViewViewController: UIViewController {
         // listTableView.delegate = self
         
         // #2 Rx 델리게이트 구현 예시)
-        // Rx코드와 델리게이트 함수가 동시에 적용되는 것을 확인할 수 있습니다. 
+        // Rx코드와 델리게이트 함수가 동시에 적용되는 것을 확인할 수 있습니다.
         listTableView.rx.setDelegate(self)
         .disposed(by: bag)
     }
