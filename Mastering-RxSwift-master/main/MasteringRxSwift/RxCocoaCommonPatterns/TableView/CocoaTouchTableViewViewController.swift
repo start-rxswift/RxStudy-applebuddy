@@ -20,6 +20,7 @@
 //  THE SOFTWARE.
 //
 
+// Rx에서는 MVC처러 테이블뷰 사용을 위해 델리게이트 패턴을 사용하지 않습니다. Observable을 활용하여 tableView를 바인딩한다고 합니다.
 import UIKit
 
 class CocoaTouchTableViewViewController: UIViewController {
