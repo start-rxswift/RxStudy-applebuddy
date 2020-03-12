@@ -20,6 +20,9 @@
 //  THE SOFTWARE.
 //
 
+// 이번에는 Rx를 활용해서 Gesture를 사용해보겠습니다.
+// 우선 CocoaTouch로 구현된 예제를 보겠습니다.
+
 import RxCocoa
 import RxSwift
 import UIKit
@@ -34,6 +37,18 @@ class RxCocoaGestureViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // viewDidLoad에서 이벤트속성에 구독자를 추가하겠습니다.
         targetView.center = view.center
+        
+        panGesture.rx.event
+            .subscribe(onNext: { [unowned self] gesture in
+                // 코코아터치와 마찬가지로 center속성을 이동한 거리만큼 업데이트 하겠습니다.
+                guard let target = gesture.view else { return }
+                let translation = gesture.translation(in: self.view)
+                target.center.x += translation.x
+                target.center.y += translation.y
+                gesture.setTranslation(.zero, in: self.view)
+            })
+            .disposed(by: bag)
     }
 }
