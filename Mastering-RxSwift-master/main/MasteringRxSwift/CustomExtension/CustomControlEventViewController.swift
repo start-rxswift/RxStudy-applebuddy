@@ -20,6 +20,11 @@
 //  THE SOFTWARE.
 //
 
+// Delegate패턴을 RxSwift 방식으로 확장하는 방법은 크게 두가지가 있습니다.
+// 1) ControlEvent로 구현할 수 있다.
+// 2) UIControl과 관련 없는 경우 DelegateProxy를 활용할 수 있습니다.
+
+// - EditingDidEegin/End 이벤트를 처리하는 Control이벤트를 구현해보겠습니다.
 import RxCocoa
 import RxSwift
 import UIKit
@@ -44,6 +49,7 @@ class CustomControlEventViewController: UIViewController {
         inputField.leftView = paddingView
         inputField.leftViewMode = .always
 
+        // 텍스트필드의 입력값 길이에 따라 countLabel 텍스트에 길이를 표시하도록 countLabel.rx.text를 binding 처리한다. 
         inputField.rx.text
             .map { $0?.count ?? 0 }
             .map { "\($0)" }
@@ -56,16 +62,47 @@ class CustomControlEventViewController: UIViewController {
             })
             .disposed(by: bag)
 
-        inputField.delegate = self
+        // #1)
+//        inputField.delegate = self
+        
+        // #2)
+        // - 여기서 방출되는 속성을 borderColor에 전달해주어야합니다.
+        // - 편집이 시작될때, 끝날때의 borderColor를 설정하도록 binding 처리합니다.
+        inputField.rx.editingDidBegin
+            .map { UIColor.red }
+            .bind(to: inputField.rx.borderColor)
+            .disposed(by: bag)
+        
+        inputField.rx.editingDidEnd
+            .map { UIColor.gray }
+            .bind(to: inputField.rx.borderColor)
+            .disposed(by: bag)
     }
 }
 
-extension CustomControlEventViewController: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        textField.layer.borderColor = UIColor.red.cgColor
+// #2
+extension Reactive where Base: UITextField {
+    var borderColor: Binder<UIColor?> {
+        return Binder(self.base) { textField, color in
+            textField.layer.borderColor = color?.cgColor
+        }
     }
-
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        textField.layer.borderColor = UIColor.gray.cgColor
+    
+    var editingDidBegin: ControlEvent<Void> {
+        return controlEvent(.editingDidBegin)
+    }
+    
+    var editingDidEnd: ControlEvent<Void> {
+        return controlEvent(.editingDidEnd)
     }
 }
+//// #1)
+//extension CustomControlEventViewController: UITextFieldDelegate {
+//    func textFieldDidBeginEditing(_ textField: UITextField) {
+//        textField.layer.borderColor = UIColor.red.cgColor
+//    }
+//
+//    func textFieldDidEndEditing(_ textField: UITextField) {
+//        textField.layer.borderColor = UIColor.gray.cgColor
+//    }
+//}
