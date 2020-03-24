@@ -20,6 +20,8 @@
 //  THE SOFTWARE.
 //
 
+// catchError 와 달리, catchErrorJustReturn 연산자는 에러 발생 시 새로운 옵저버블 대신 기본값을 리턴하는 연산자입니다.
+
 import RxSwift
 import UIKit
 
@@ -35,8 +37,12 @@ enum MyError: Error {
 
 let subject = PublishSubject<Int>()
 
+// catchErrorJustReturn 연산자는 에러발생시 파라메터로 전달한 값을 전달합니다. 이 값은 subject가 전달하는 타입을 따라갑니다.
 subject
+.catchErrorJustReturn(-1)
     .subscribe { print($0) }
     .disposed(by: bag)
 
+// next(-1)
+// completed
 subject.onError(MyError.error)
