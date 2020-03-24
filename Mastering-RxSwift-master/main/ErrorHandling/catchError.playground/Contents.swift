@@ -20,7 +20,7 @@
 //  THE SOFTWARE.
 //
 
-// catchError 연산자는 next이벤트, completed이벤트는 구독자에게 그대로 전달합니다. 반면 에러이벤트는 전달하지 않고 새로운 옵저버블이나 기본값을 전달합니다. 특히 네트워크 요청을 구현할때 많이 사용 됩니다.
+// MARK: catchError 연산자는 next이벤트, completed이벤트는 구독자에게 그대로 전달합니다. 반면 에러이벤트는 전달하지 않고 새로운 옵저버블이나 기본값을 전달합니다. 특히 네트워크 요청을 구현할때 많이 사용 됩니다.
 
 import RxSwift
 import UIKit

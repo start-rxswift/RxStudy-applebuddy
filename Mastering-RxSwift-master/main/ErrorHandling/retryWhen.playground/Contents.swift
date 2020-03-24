@@ -20,6 +20,8 @@
 //  THE SOFTWARE.
 //
 
+// MARK: retryWhen 연산자는 retry 연산자와 달리 에러가 발생 시 trigger Observable이 방출함에 따라 재시도를 진행하며 클로져를 인자로 받습니다.
+
 import RxSwift
 import UIKit
 
@@ -55,6 +57,12 @@ let source = Observable<Int>.create { observer in
 
 let trigger = PublishSubject<Void>()
 
+// 에러가 발생했을때 바로 재시도를 하는 retry와 달리, retryWhen은 trigger Observable이 next이벤트를 전달할 때까지 대기합니다.
 source
+    .retryWhen { _ in trigger }
     .subscribe { print($0) }
     .disposed(by: bag)
+
+// retry 연산자 대신 retryWhen 연산자를 활용하면 에러발생 시 바로 재시도를 하는 것이 아닌 trigger가 Observable을 방출할때마다 재시도를 합니다.
+trigger.onNext(()) // 한번 재시도 후 대기
+trigger.onNext(()) // 두번째 재시도 후 대기

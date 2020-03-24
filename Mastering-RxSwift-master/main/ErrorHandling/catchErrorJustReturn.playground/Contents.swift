@@ -20,7 +20,7 @@
 //  THE SOFTWARE.
 //
 
-// catchError 와 달리, catchErrorJustReturn 연산자는 에러 발생 시 새로운 옵저버블 대신 기본값을 리턴하는 연산자입니다.
+// MARK: catchErrorJustReturn 연산자는 catchError 와 달리 에러 발생 시 새로운 옵저버블 대신 기본값을 리턴하는 연산자입니다.
 
 import RxSwift
 import UIKit
