@@ -21,9 +21,10 @@
 //
 
 // MARK: retry 연산자를 사용하면 옵저버블 에러가 발생 시 이전의 구독을 중단하고 새로운 구독을 시작합니다. 새로운 구독이 시작하므로, Observable 시퀀스는 처음부터 다시 시작합니다.
+
 // 인자값을 안주면, 무한으로 재시도를 합니다. 이 경우 무한루프가 될 수 있기 때문에 가능한 피하고, 주의해야합니다.
 // 두번째 형식으로는 최대 재시도횟수를 받아 설정할 수 있습니다.
-// retry는 에러가 발생한 즉시 다시 처음부터 재시도 합니다. 이때 별도로 중간 처리를 하는 방법은 없습니다. 
+// retry는 에러가 발생한 즉시 다시 처음부터 재시도 합니다. 이때 별도로 중간 처리를 하는 방법은 없습니다.
 
 import RxSwift
 import UIKit
@@ -43,7 +44,7 @@ var attempts = 1
 let source = Observable<Int>.create { observer in
     let currentAttempts = attempts
     print("#\(currentAttempts) START")
-    
+
     // attempts 값이 3보다 작으면 error를 방출하고, attempts값을 증가 시킵니다.
     if attempts < 3 {
         observer.onError(MyError.error)

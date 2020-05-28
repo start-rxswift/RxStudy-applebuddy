@@ -39,13 +39,13 @@ let subject = PublishSubject<Int>()
 let recovery = PublishSubject<Int>()
 
 /*
-subject
-    .subscribe { print($0) }
-    .disposed(by: bag)
+ subject
+ .subscribe { print($0) }
+ .disposed(by: bag)
 
-// subject로 error 이벤트를 전달하면 그대로 전달됩니다. 구독이 종료 된 후 다른 이벤트를 전달되지 않습니다.
-subject.onError(MyError.error)
-*/
+ // subject로 error 이벤트를 전달하면 그대로 전달됩니다. 구독이 종료 된 후 다른 이벤트를 전달되지 않습니다.
+ subject.onError(MyError.error)
+ */
 
 // 여기 catchError 연산자를 추가해 보겠습니다. 이 연산자는 클로져를 파라메터로 받습니다. 에러가 발생 시 새로운 옵저버블 이나 기본값을 전달합니다.
 // catchError 클로져에서 recovery subject를 리턴합니다.

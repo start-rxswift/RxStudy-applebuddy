@@ -27,14 +27,14 @@ import UIKit
 
 class CustomBinderViewController: UIViewController {
     let bag = DisposeBag()
-    
+
     @IBOutlet var valueLabel: UILabel!
-    
+
     @IBOutlet var colorPicker: UISegmentedControl!
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         //        // #1) selectedSegmentIndex에서 방출하는 인덱스에 맞는 색상을 설정하고 Label의 텍스트 속성에 바인딩하고 있습니다.
         //        colorPicker.rx.selectedSegmentIndex
         //            .map { index -> UIColor in
@@ -78,7 +78,7 @@ class CustomBinderViewController: UIViewController {
 // #2) CustomBinder를 통해 더욱더 간결하게 코드를 구현할 수 있습니다.
 extension Reactive where Base: UILabel {
     var segmentedValue: Binder<Int> {
-        return Binder(self.base) { label, index in
+        return Binder(base) { label, index in
             switch index {
             case 0:
                 label.text = "Red"

@@ -44,14 +44,14 @@ class RxCocoaNotificationCenterViewController: UIViewController {
                 }
             })
             .disposed(by: bag)
-        
+
         // map 연산자를 활용해 노티에 포함된 키보드 높이를 반환합니다.
         // hide Event, 하단 여백을 주기위한 Observable을 merge해서 처리합니다.
         let willShowObservable = NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
             .map { ($0.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0 }
         let willHideObservable = NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
-            .map { noti -> CGFloat in 0 }
-        
+            .map { _ -> CGFloat in 0 }
+
         // 구독자에게 높이값이 전달되며 이제 맵 연산자로 높이값을 inset으로 변환하겠습니다.
         Observable.merge(willShowObservable, willHideObservable)
             .map { [unowned self] height -> UIEdgeInsets in
@@ -59,14 +59,14 @@ class RxCocoaNotificationCenterViewController: UIViewController {
                 inset.bottom = height
                 return inset
                 // 마지막으로 구독자를 추가하고 전달될 inset을 반영하겠습니다.
-        }
-        .subscribe(onNext: { [weak self] inset in
-            UIView.animate(withDuration: 0.1) {
-                // 애니메이션 처리와 함께 inset을 변경
-                self?.textView.contentInset = inset
             }
-        })
-        .disposed(by: bag)
+            .subscribe(onNext: { [weak self] inset in
+                UIView.animate(withDuration: 0.1) {
+                    // 애니메이션 처리와 함께 inset을 변경
+                    self?.textView.contentInset = inset
+                }
+            })
+            .disposed(by: bag)
     }
 
     override func viewWillDisappear(_ animated: Bool) {

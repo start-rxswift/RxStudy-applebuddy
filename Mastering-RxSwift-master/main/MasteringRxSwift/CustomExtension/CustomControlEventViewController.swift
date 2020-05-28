@@ -49,7 +49,7 @@ class CustomControlEventViewController: UIViewController {
         inputField.leftView = paddingView
         inputField.leftViewMode = .always
 
-        // 텍스트필드의 입력값 길이에 따라 countLabel 텍스트에 길이를 표시하도록 countLabel.rx.text를 binding 처리한다. 
+        // 텍스트필드의 입력값 길이에 따라 countLabel 텍스트에 길이를 표시하도록 countLabel.rx.text를 binding 처리한다.
         inputField.rx.text
             .map { $0?.count ?? 0 }
             .map { "\($0)" }
@@ -64,7 +64,7 @@ class CustomControlEventViewController: UIViewController {
 
         // #1)
 //        inputField.delegate = self
-        
+
         // #2)
         // - 여기서 방출되는 속성을 borderColor에 전달해주어야합니다.
         // - 편집이 시작될때, 끝날때의 borderColor를 설정하도록 binding 처리합니다.
@@ -72,7 +72,7 @@ class CustomControlEventViewController: UIViewController {
             .map { UIColor.red }
             .bind(to: inputField.rx.borderColor)
             .disposed(by: bag)
-        
+
         inputField.rx.editingDidEnd
             .map { UIColor.gray }
             .bind(to: inputField.rx.borderColor)
@@ -83,21 +83,22 @@ class CustomControlEventViewController: UIViewController {
 // #2
 extension Reactive where Base: UITextField {
     var borderColor: Binder<UIColor?> {
-        return Binder(self.base) { textField, color in
+        return Binder(base) { textField, color in
             textField.layer.borderColor = color?.cgColor
         }
     }
-    
+
     var editingDidBegin: ControlEvent<Void> {
         return controlEvent(.editingDidBegin)
     }
-    
+
     var editingDidEnd: ControlEvent<Void> {
         return controlEvent(.editingDidEnd)
     }
 }
+
 //// #1)
-//extension CustomControlEventViewController: UITextFieldDelegate {
+// extension CustomControlEventViewController: UITextFieldDelegate {
 //    func textFieldDidBeginEditing(_ textField: UITextField) {
 //        textField.layer.borderColor = UIColor.red.cgColor
 //    }
@@ -105,4 +106,4 @@ extension Reactive where Base: UITextField {
 //    func textFieldDidEndEditing(_ textField: UITextField) {
 //        textField.layer.borderColor = UIColor.gray.cgColor
 //    }
-//}
+// }

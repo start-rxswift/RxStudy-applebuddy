@@ -39,7 +39,7 @@ class RxCocoaGestureViewController: UIViewController {
 
         // viewDidLoad에서 이벤트속성에 구독자를 추가하겠습니다.
         targetView.center = view.center
-        
+
         panGesture.rx.event
             .subscribe(onNext: { [unowned self] gesture in
                 // 코코아터치와 마찬가지로 center속성을 이동한 거리만큼 업데이트 하겠습니다.

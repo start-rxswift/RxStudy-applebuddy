@@ -25,33 +25,35 @@ import UIKit
 
 class RxCocoaCollectionViewViewController: UIViewController {
     let bag = DisposeBag()
-    
+
     @IBOutlet var listCollectionView: UICollectionView!
-    
+
     // Rx에서는 Observable을 CollectionView와 바인딩합니다.
     // 먼저 바인딩할 Observable을 생성하겠습니다.
     let colorObservable = Observable.of(MaterialBlue.allColors)
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        colorObservable.bind(to: listCollectionView.rx.items(cellIdentifier: "colorCell", cellType: ColorCollectionViewCell.self)) { index, color, cell in
+        colorObservable.bind(to: listCollectionView.rx.items(cellIdentifier: "colorCell", cellType: ColorCollectionViewCell.self)) { _, color, cell in
             // 재사용큐에 셀을 꺼내고, 타입캐스팅 하는것까지 자동으로 구성되므로 클로져 내에서는 셀 속성을 구성하면 됩니다.
             cell.backgroundColor = color
             cell.hexLabel.text = color.rgbHexString
         }
         .disposed(by: bag)
-        
+
         // 선택이벤트를 처리할때 indexPath가 필요하면 itemSelected, 모델데이터가 필요하면 modelSelected 메서드를 활용할 수 있습니다.
         listCollectionView.rx.modelSelected(UIColor.self)
             .subscribe(onNext: { color in
                 print(color.rgbHexString)
             })
             .disposed(by: bag)
-        
+
         // MARK: #1) tableView와 마찬가지로 Cocoa때처럼 delegate를 설정하면 Rx구현 코드가 제대로 적용되지 않습니다.
+
         // listCollectionView.delegate = self
-        
+
         // MARK: #2) rx.setDelegate(self)로 델리게이트를 설정하면 정상적으로 나머지 Rx코드도 적용이 되는것을 확인할 수 있습니다.
+
         listCollectionView.rx.setDelegate(self)
             .disposed(by: bag)
     }
@@ -62,7 +64,7 @@ extension RxCocoaCollectionViewViewController: UICollectionViewDelegateFlowLayou
         guard let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout else {
             return CGSize.zero
         }
-        
+
         let value = (collectionView.frame.width - (flowLayout.sectionInset.left + flowLayout.sectionInset.right + flowLayout.minimumInteritemSpacing)) / 2
         return CGSize(width: value, height: value)
     }

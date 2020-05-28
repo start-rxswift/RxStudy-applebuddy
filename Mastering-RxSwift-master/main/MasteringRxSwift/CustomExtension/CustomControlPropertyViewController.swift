@@ -51,13 +51,13 @@ class CustomControlPropertyViewController: UIViewController {
 //            .map { UIColor(white: 0.5, alpha: 1.0) }
 //            .bind(to: view.rx.backgroundColor)
 //            .disposed(by: bag)
-        
+
         // color, background 속성을 바인딩하겠습니다.
         // ControlProperty를 통해 backgroundColor, Color 속성을 보다 효율적으로 관리할 수 있습니다.
         whiteSlider.rx.color
             .bind(to: view.rx.backgroundColor)
             .disposed(by: bag)
-        
+
         // 아래와 같이 bind to observer로 두개이상의 옵저버를 전달할 수 있습니다.
         resetButton.rx.tap
             .map { _ in UIColor(white: 0.5, alpha: 1.0) }
@@ -72,9 +72,9 @@ extension Reactive where Base: UISlider {
         // event parameter : valueChanged로 설정
         // getter : value 속성으로 UIColor를 생성 후 리턴
         // setter : UIColor에서 white 컴포넌트를 추춘 후 value속성에 저장한다.
-        return base.rx.controlProperty(editingEvents: .valueChanged, getter: { (slider) in
+        return base.rx.controlProperty(editingEvents: .valueChanged, getter: { slider in
             UIColor(white: CGFloat(slider.value), alpha: 1.0)
-        }) { (slider, color) in
+        }) { slider, color in
             var white = CGFloat(1)
             color?.getWhite(&white, alpha: nil)
             slider.value = Float(white)

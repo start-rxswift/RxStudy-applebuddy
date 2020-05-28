@@ -21,6 +21,7 @@
 //
 
 // MARK: - Delegate Proxy
+
 // - 이번시간은 Delegate Proxy에 대해서 공부하겠습니다.
 // - Delegate Proxy는 Delegate Pattern의 역할을 대신 해주는 객체입니다.
 // - Delegate PRoxy의 적용은 처음에는 어려울 수 있지만, 익숙해진다면 거의 모든 부분의 Delegate Pattern을 적용할 수 있습니다.
@@ -51,7 +52,7 @@ class DelegateProxyViewController: UIViewController {
                 print(locations)
             })
             .disposed(by: bag)
-        
+
         // 아래의 코드로 binding이 되면 업데이트된 위치로 mapView가 설정됩니다.
         locationManager.rx.didUpdateLocations
             .map { $0[0] }
@@ -81,15 +82,15 @@ extension CLLocationManager: HasDelegate {
 class RxCLLocationManagerDelegateProxy: DelegateProxy<CLLocationManager, CLLocationManagerDelegate>, DelegateProxyType, CLLocationManagerDelegate {
     // Proxy Class에 새로운 속성을 추가하겠습니다.
     // 여기에서 weak키워드를 사용해 참조순환문제를 방지할 수 있도록 합니다.
-    weak private(set) var locationManager: CLLocationManager?
+    private(set) weak var locationManager: CLLocationManager?
     init(locationManager: CLLocationManager) {
         self.locationManager = locationManager
         super.init(parentObject: locationManager, delegateProxy: RxCLLocationManagerDelegateProxy.self)
     }
-    
+
     // 필요한시점에 자동으로 호출이 됩니다. Rx는 내부적으로 Proxy Factory를 가지고 있는데 우리가 구현한 Delegate Proxy가 팩토리에 자동으로 등록이 됩니다. 여기까지가 가장 기본적인 Delegate Proxy 부분입니다.
     static func registerKnownImplementations() {
-        self.register {
+        register {
             RxCLLocationManagerDelegateProxy(locationManager: $0)
         }
     }
@@ -104,6 +105,7 @@ extension Reactive where Base: CLLocationManager {
         // * 새로운 인스턴스를 생성할 수 있는데 내부적으로 여러 문제가 생길 수 있습니다. (두개이상 생성되는 인스턴스 등) 그래서 인스턴스를 생성할때는 생성자를 사용하는 것이 아니라 Proxy(for... 메서드를 사용해야합니다.
         return RxCLLocationManagerDelegateProxy.proxy(for: base)
     }
+
     // 나머지는 필요에 따라 추가합니다.
     // didUpdateLocation method가 호출되면 observable을 통해 새로운 위치정보를 방출하도록 구현해보겠습니다.
     // Delegate 속성 아랫쪽에 새로운 속성을 추가해보겠습니다.
@@ -111,10 +113,10 @@ extension Reactive where Base: CLLocationManager {
         // 이제 여기서 Observable을 반환해야 합니다.
         return delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didUpdateLocations:)))
             .map { parameters in
-                return parameters[1] as! [CLLocation]
-        }
+                parameters[1] as! [CLLocation]
+            }
     }
+
     // 이제 Delegate Proxy가 잘 작동하는지 확인해보겠습니다.
-    // * CLLocationManagerDelegate에는 DidFailErrorWith.. 등의 메서드도 있습니다. 이것 되의 자주자용하는 메서드들을 DelegateProxy를 통해 구현해보시기 바랍니다. 
-    
+    // * CLLocationManagerDelegate에는 DidFailErrorWith.. 등의 메서드도 있습니다. 이것 되의 자주자용하는 메서드들을 DelegateProxy를 통해 구현해보시기 바랍니다.
 }
