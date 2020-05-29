@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - reduce
+
+// * reduce는 중간결과까지 모두 방출하는 scan 연산자와 달리 맨 마지막 결과값만을 방출합니다.
+
 import RxSwift
 import UIKit
 
@@ -33,7 +37,7 @@ enum MyError: Error {
     case error
 }
 
-let o = Observable.range(start: 1, count: 5)
+let o = Observable.range(start: 1, count: 5) // 1, 2, 3, 4, 5
 
 print("== scan")
 
@@ -42,3 +46,10 @@ o.scan(0, accumulator: +)
     .disposed(by: bag)
 
 print("== reduce")
+
+// * reduce는 중간결과까지 모두 방출하는 scan 연산자와 달리 맨 마지막 결과값만을 방출합니다.
+// -> scan : 1, 3, 6, 10, 15
+// -> reduce : 15(맨 마지막 값만을 방출)
+o.reduce(0, accumulator: +)
+    .subscribe { print($0) }
+    .disposed(by: bag)
