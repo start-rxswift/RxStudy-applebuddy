@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - CombineLatest
+
+// MARK: CombineLatest
+
 import RxSwift
 import UIKit
 
@@ -35,3 +39,28 @@ enum MyError: Error {
 
 let greetings = PublishSubject<String>()
 let languages = PublishSubject<String>()
+
+// combineLatest는 두개의 옵저버블과 클로져를 parameter로 받습니다.
+Observable.combineLatest(greetings, languages) { lhs, rhs -> String in
+    "\(lhs) \(rhs)"
+}
+.subscribe { print($0) }
+.disposed(by: bag)
+
+// greetings, languages에서 next 이벤트를 전달하면 두 문자열을 합ㅈ친 Hi World! 가 출력됩니다.
+greetings.onNext("Hi")
+languages.onNext("World!")
+// Hi World!
+
+greetings.onNext("Hello")
+languages.onNext("RxSwift")
+// Hello RxSwift
+
+greetings.onCompleted()
+// greetings.onError(MyError.error) // 어느 한 옵저버블에서라도 에러 이벤트가 전달되면 그 즉시 구독자에게 error 이벤트를 전달하고 종료합니다. 그러므로 그 이후의 옵저버블은 구독자에게 전달되지 않습니다.
+
+languages.onNext("SwiftUI")
+// Hello SwiftUI
+
+languages.onCompleted()
+// 모든 Observable이 completed() 이벤트를 전달하면 이 시점에 구독자에게 completed 이벤트가 전달됩니다.
