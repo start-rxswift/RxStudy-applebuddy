@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - ZIP Operator
+
+// * 하나의 옵저버블이 갱신할 때마다, 가장 최신의 옵저버블들을 결합하던 combineLatest 연산자와는 달리, Zip 연산자를 사용하면 첫번째요소는 첫번쨰 요소끼리, 두번째요소는 두번째 요소끼리 결합합니다.
+
 import RxSwift
 import UIKit
 
@@ -35,3 +39,28 @@ enum MyError: Error {
 
 let numbers = PublishSubject<Int>()
 let strings = PublishSubject<String>()
+
+Observable.zip(numbers, strings) { "\($0) - \($1)" }
+    .subscribe { print($0) }
+    .disposed(by: bag)
+
+numbers.onNext(1)
+strings.onNext("one") // 1 - one
+
+numbers.onNext(2)
+numbers.onNext(3)
+strings.onNext("two") // 2 - two
+strings.onNext("three") // 3 = three
+
+// numbers subject에 completed 이벤트를 전달하고, strings subject에는 새로운 next 이벤트를 전달하겠습니다.
+numbers.onNext(4)
+
+// * 어느 하나 라도 도중 error 이벤트를 전달하면 그 즉시 구독자에게 error 이벤트를 전달 후 작업을 종료합니다.
+// numbers.onError(MyError.error)
+
+numbers.onCompleted()
+strings.onCompleted()
+// * 최종적으로 구독자에게 completed 이벤트가 전달됩니다.
+strings.onNext("four") // 구독자에게 completed 이벤트가 전달 된 후의 observable은 무시됩니다.
+
+// 구독자로 completed 이벤트가 전달되는 시점은 모든 observable이 completed 이벤트를 전달한 시점입니다.
