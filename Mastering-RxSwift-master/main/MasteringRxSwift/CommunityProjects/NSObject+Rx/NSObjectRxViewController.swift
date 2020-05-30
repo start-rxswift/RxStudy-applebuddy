@@ -20,13 +20,17 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - NSObject-Rx
+
+// - NSObject+Rx는 disposeBag을 Rx를 사용하려는 곳 마다 일일히 선언해 줄 필요가 없게 해줍니다.
+// - 실제 import 시에는 NSObject_Rx로 명시해줍니다. 
+
+import NSObject_Rx
 import RxCocoa
 import RxSwift
 import UIKit
 
 class NSObjectRxViewController: UIViewController {
-    let bag = DisposeBag()
-
     let button = UIButton(type: .system)
     let label = UILabel()
 
@@ -35,21 +39,22 @@ class NSObjectRxViewController: UIViewController {
 
         Observable.just("Hello")
             .subscribe { print($0) }
-            .disposed(by: bag)
+            .disposed(by: rx.disposeBag)
 
         button.rx.tap
             .map { "Hello" }
             .bind(to: label.rx.text)
-            .disposed(by: bag)
+            .disposed(by: rx.disposeBag)
     }
 }
 
-class MyClass {
-    let bag = DisposeBag()
+// - 일반 class의 경우 HasDisposeBag 프토토콜을 채택해서 별도의 Disposebag() 선언없이 disposeBag을 사용할 수 있습니다.
+class MyClass: HasDisposeBag {
+//    let bag = DisposeBag()
 
     func doSomething() {
         Observable.just("Hello")
             .subscribe { print($0) }
-            .disposed(by: bag)
+            .disposed(by: disposeBag)
     }
 }
