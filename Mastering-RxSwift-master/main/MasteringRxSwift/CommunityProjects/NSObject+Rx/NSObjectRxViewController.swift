@@ -23,7 +23,7 @@
 // MARK: - NSObject-Rx
 
 // - NSObject+Rx는 disposeBag을 Rx를 사용하려는 곳 마다 일일히 선언해 줄 필요가 없게 해줍니다.
-// - 실제 import 시에는 NSObject_Rx로 명시해줍니다. 
+// - 실제 import 시에는 NSObject_Rx로 명시해줍니다.
 
 import NSObject_Rx
 import RxCocoa

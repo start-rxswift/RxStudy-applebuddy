@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - amb
+
+// - amb를 사용하면 가장 빠른 응답을 한 옵저버블 subject에 대해서만 응답처리를 하도록 할 수 있습니다.
+
 import RxSwift
 import UIKit
 
@@ -36,3 +40,21 @@ enum MyError: Error {
 let a = PublishSubject<String>()
 let b = PublishSubject<String>()
 let c = PublishSubject<String>()
+
+// a.amb(b)
+Observable.amb([a, b, c])
+    .subscribe { print($0) }
+    .disposed(by: bag)
+
+// a subject가 b subject보다 옵저버블을 먼저 방출했습니다. 그래서 amb는 a subject를 구독하고 b는 무시합니다.
+// c.onNext("C")
+a.onNext("A")
+b.onNext("B")
+
+// b subject의 이후의 이벤트도 무시되며 구독자에게 전달되지 않습니다.
+b.onCompleted()
+
+// 반면 a subject에 대한 이벤트는 구독자에게 전답됩니다.
+a.onCompleted()
+
+// c.onError(MyError.error)
