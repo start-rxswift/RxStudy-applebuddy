@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - delaySubscription Operator
+
+// - delay operator와 달리, delaySubscription은 구독시점을 지연시킬 뿐, next이벤트가 전달되는 시점은 지연시키지 않습니다.
+
 import RxSwift
 import UIKit
 
@@ -34,3 +38,12 @@ func currentTimeString() -> String {
     f.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
     return f.string(from: Date())
 }
+
+// 7초 동안은 아무런 로그도 출력되지 않고, 7초 이후에 next이벤트를 방출하기 시작합니다.
+// 그리고 방출된 next이벤트는 지연없이 구독자에게 전달됩니다.
+Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+    .take(10)
+    .debug()
+    .delaySubscription(.seconds(7), scheduler: MainScheduler.instance)
+    .subscribe { print($0) }
+    .disposed(by: bag)
