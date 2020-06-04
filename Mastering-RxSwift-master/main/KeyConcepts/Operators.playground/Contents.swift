@@ -27,8 +27,19 @@ import UIKit
  # Operators
  */
 
-let bag = DisposeBag()
+let disposeBag = DisposeBag()
+
+// - 연산자(Operator)는 보통 subscribe { } 이전에 사용합니다.
+// take 연산자는 옵저버블에서 파라미터에서 지정한 특정 갯수만 옵저버블로 다시 생성해주는 연산자입니다.
+// 쉽게 말해, 아래의 경우 처음 요소 5개만 전달합니다.
+Observable.from([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    .take(5) // 1, 2, 3, 4, 5
+    .filter { $0.isMultiple(of: 2) } // 2, 4
+    .subscribe { print($0) }
+    .disposed(by: disposeBag) // completed
 
 Observable.from([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    .filter { $0.isMultiple(of: 2) } // 2, 4, 6, 8
+    .take(3) // 2, 4, 6
     .subscribe { print($0) }
-    .disposed(by: bag)
+    .disposed(by: disposeBag) // completed
