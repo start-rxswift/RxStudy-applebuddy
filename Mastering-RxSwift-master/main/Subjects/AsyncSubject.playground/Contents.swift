@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - AsyncSubject
+
+// - PublishSubject, ReplaySubject, BehaviorSubject는 subject로 이벤트가 전달되면 즉시 구독자에게 전달됩니다. 하지만 asyncSubject는 completed이벤트가 전달되기 전까지 구독자들에게 이벤트를 전달하지 않습니다.
+// - AsyncSubject는 completed 이벤트를 전달받으면 가장 최근에 받은 이벤트를 구독자에게 전달합니다.
 import RxCocoa
 import RxSwift
 import UIKit
@@ -28,8 +32,24 @@ import UIKit
  # AsyncSubject
  */
 
-let bag = DisposeBag()
+let disposeBag = DisposeBag()
 
 enum MyError: Error {
     case error
 }
+
+let subject = AsyncSubject<Int>()
+subject.subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// - 아직 asyncSubject에 completed 이벤트가 전달되지 않았기 때문에 이 시점에 전달한 이벤트는 구독자에게 전달되지 않습니다.
+subject.onNext(1)
+
+subject.onNext(2)
+subject.onNext(3)
+
+// - error이벤트를 전달받으면 error이벤트만 구독자에게 전달되고 completed 이벤트 없이 종료됩니다.
+// subject.onError(MyError.error)
+
+// - subject로 completed이벤트를 전달하면 가장 최근의 이벤트, 3이 구독자에게 전달됩니다.
+subject.onCompleted()
