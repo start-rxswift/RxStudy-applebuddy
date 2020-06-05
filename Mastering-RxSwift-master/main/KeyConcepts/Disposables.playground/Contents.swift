@@ -57,33 +57,32 @@ import UIKit
  */
 
 // 1) Disposable이 리소스 해제에 사용되는 경우
-/*
- let subscription = Observable.from([1, 2, 3])
- .subscribe(onNext: { element in
-     print("Next", element)
- }, onError: { error in
-     print("Error", error)
- }, onCompleted: {
-     print("Completed")
- }, onDisposed: {
-     print("Disposed")
- })
 
- // 아래와 같이 리소스를 해제할 수 있지만 더 나은 방법이있습니다.
- // 더 좋은 방법으로는 disposeBag을 사용하는 방법이 있습니다. disposeBag을 만드는 방법은 단순합니다.
- subscription.dispose()
+let subscription = Observable.from([1, 2, 3])
+    .subscribe(onNext: { element in
+        print("Next", element)
+    }, onError: { error in
+        print("Error", error)
+    }, onCompleted: {
+        print("Completed")
+    }, onDisposed: {
+        print("Disposed")
+    })
 
- var bag = DisposeBag()
+// 아래와 같이 리소스를 해제할 수 있지만 더 나은 방법이있습니다.
+// 더 좋은 방법으로는 disposeBag을 사용하는 방법이 있습니다. disposeBag을 만드는 방법은 단순합니다.
+subscription.dispose()
 
- Observable.from([1, 2, 3])
- .subscribe {
-     print($0)
- }
- .disposed(by: disposeBag)
- // 위와 같이 parameter로 disposeBag을 전달하면, subscribe가 리턴하는 disposable이 disposeBag에 추가됩니다. disposeBag에 추가되는 disposable은 disposeBag이 해제되는 시점에 함게 해제됩니다. ARC의 autoReleasePool과 비슷한 역할이라 보면 됩니다.
- // 원하는 시점에 disposeBag을 해제하고 싶다면 아래와 같이 작성하면 됩니다. 그렇게 되면 지금까지 disposeBag에 쌓인 리소스가 한꺼번에 해제됩니다.
- disposeBag = DisposeBag()
- */
+var disposeBag = DisposeBag()
+
+Observable.from([1, 2, 3])
+    .subscribe {
+        print($0)
+    }
+    .disposed(by: disposeBag)
+// 위와 같이 parameter로 disposeBag을 전달하면, subscribe가 리턴하는 disposable이 disposeBag에 추가됩니다. disposeBag에 추가되는 disposable은 disposeBag이 해제되는 시점에 함게 해제됩니다. ARC의 autoReleasePool과 비슷한 역할이라 보면 됩니다.
+// 원하는 시점에 disposeBag을 해제하고 싶다면 아래와 같이 작성하면 됩니다. 그렇게 되면 지금까지 disposeBag에 쌓인 리소스가 한꺼번에 해제됩니다.
+disposeBag = DisposeBag()
 
 // 2) Disposable이 실행 취소에 사용되는 경우
 let subscription2 = Observable<Int>.interval(.seconds(1),
