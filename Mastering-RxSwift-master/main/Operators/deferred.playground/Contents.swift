@@ -20,6 +20,11 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - deferred operator
+
+// - deferred 연산자는 특정 조건에 따라 Observable을 생성할 수 있습니다.
+// - deferred 연산자는 옵저버블을 리턴하는 클로져를 인자값으로 받습니다.
+
 import RxSwift
 import UIKit
 
@@ -31,3 +36,28 @@ let disposeBag = DisposeBag()
 let animals = ["🐶", "🐱", "🐹", "🐰", "🦊", "🐻", "🐯"]
 let fruits = ["🍎", "🍐", "🍋", "🍇", "🍈", "🍓", "🍑"]
 var flag = true
+
+// ex) flag는 true -> false가 되며, fruits 배열 요소가 방출 됨
+let factory: Observable<String> = Observable.deferred {
+    flag.toggle()
+
+    if flag {
+        return Observable.from(animals)
+    } else {
+        return Observable.from(fruits)
+    }
+}
+
+// ex) flag는 false -> true가 되며, animals 배열 요소가 방출 됨
+factory
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+factory
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// ex) 다시 flag는 true -> false가 되며, fruits 배열 요소가 방출 됨
+factory
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
