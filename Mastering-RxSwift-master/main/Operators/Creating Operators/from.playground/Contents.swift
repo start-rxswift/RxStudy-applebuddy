@@ -20,6 +20,9 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - from operator
+
+// - from 연산자는 전달받은 배열의 요소를 하나하나 전달합니다.
 import RxSwift
 import UIKit
 
@@ -29,6 +32,16 @@ import UIKit
 
 let disposeBag = DisposeBag()
 let fruits = ["🍏", "🍎", "🍋", "🍓", "🍇"]
+
+// - from 연산자의 parameter로 fruits를 넣으면 fruits 배열의 요소가 하나하나 순서대로 방출합니다.
+
+Observable.from(fruits)
+    .subscribe { element in print(element) }
+    .disposed(by: disposeBag)
+
+Observable.from(fruits)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
 Observable.from(fruits)
     .subscribe { element in print(element) }

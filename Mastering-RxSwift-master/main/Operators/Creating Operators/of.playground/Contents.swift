@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: of operator
+
+// - of 연산자는 배열을 받아 배열 요소를 차례대로 전달합니다.
+
 import RxSwift
 import UIKit
 
@@ -31,6 +35,14 @@ let disposeBag = DisposeBag()
 let apple = "🍏"
 let orange = "🍊"
 let kiwi = "🥝"
+
+Observable.of(apple, orange, kiwi)
+    .subscribe { element in print(element) }
+    .disposed(by: disposeBag)
+
+Observable.of([1, 2], [3, 4], [5, 6])
+    .subscribe { element in print(element) }
+    .disposed(by: disposeBag)
 
 Observable.of(apple, orange, kiwi)
     .subscribe { element in print(element) }

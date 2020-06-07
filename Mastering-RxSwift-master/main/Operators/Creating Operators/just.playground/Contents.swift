@@ -20,6 +20,11 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - just operator
+
+// - just는 하나의 항목을 방출하는 Observable을 생성합니다.
+// - parameter로 하나의 요소를 받아서 Observable을 반환합니다.
+
 import RxSwift
 import UIKit
 
@@ -29,6 +34,19 @@ import UIKit
 
 let disposeBag = DisposeBag()
 let element = "😀"
+
+Observable.just(element)
+    .subscribe { event in print(event) }
+    .disposed(by: disposeBag)
+// next(😀)
+// completed
+
+// - just 연산자의 paramter로 배열을 전달하면 배열 그대로 구독자에게 전달됩니다.
+// - from 연산자와 자주 혼동할 수 있는데, just는 전달받은 요소를 그대로 Observable로 방출합니다.
+
+Observable.just([1, 2, 3])
+    .subscribe { event in print(event) }
+    .disposed(by: disposeBag)
 
 Observable.just(element)
     .subscribe { event in print(event) }
