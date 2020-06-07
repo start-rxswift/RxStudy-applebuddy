@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - range operator
+
+// - range operator는 시작값에서 1씩 증가하는 sequence를 생성합니다.
+
 import RxSwift
 import UIKit
 
@@ -28,6 +32,11 @@ import UIKit
  */
 
 let disposeBag = DisposeBag()
+
+// - range : 1 ... 10 의 10개가 방출됩니다.
+Observable.range(start: 1, count: 10)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
 
 Observable.range(start: 1, count: 10)
     .subscribe { print($0) }
