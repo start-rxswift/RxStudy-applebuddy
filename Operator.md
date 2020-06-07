@@ -38,6 +38,16 @@ Observable.from([1,2,3,4,5,6,7,8,9])
 
 <br><br>
 
+## 연산자 별 특징 요약정리
+- RxSwift Operator 요약 기록
+  - craete(Observable 동작방식 설정)
+  - just(요소그대로), of(여러요소그대로), from(배열요소차례대로)
+  - range(1…10), generate(for문대체)
+  - take(첨부터 지정갯수만큼만 방출)
+  - repeatElement(반복 방출)
+  - deferred(특정 조건에 따른 Observable 생성)
+  - empty(completed 이벤트 전달 옵저버블 방출), error(error 이벤트 전달 옵저버블 방출)
+
 ## 연산자 종류 
 
 ### just 
