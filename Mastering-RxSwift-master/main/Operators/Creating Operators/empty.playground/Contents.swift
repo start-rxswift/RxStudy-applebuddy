@@ -20,11 +20,21 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - empty operator
+
+// - empty, error 연산자가 생성하는 Observable은 next이벤트를 전달하지 않는 공통점이 있습니다. 다시말해, 어떠한 요소도 방출하지 않습니다.
+// - empty 연산자는 next이벤트를 전달하지 않습니다.
+// - empty 연산자 : completed 이벤트를 전달하는 옵저버블을 방출합니다.
+
 import RxSwift
 import UIKit
 
+let disposeBag = DisposeBag()
 /*:
  # empty
  */
 
-let disposeBag = DisposeBag()
+Observable<Void>.empty()
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+// result: completed 이벤트가 전달됩니다. 옵저버가 아무런 동작 없이 종요해야할 때 사용됩니다.

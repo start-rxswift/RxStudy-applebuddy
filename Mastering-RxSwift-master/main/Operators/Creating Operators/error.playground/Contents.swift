@@ -20,6 +20,12 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - error operator
+
+// - error 연산자는 error 이벤트를 전달하고 종료하는 Observable을 방출합니다.
+// - error 연산자는 empty 연산자와 같이 next이벤트를 전달하지 않는다는 특징이 있습니다.
+// - error 연산자는 주로 error를 처리할때 활용됩니다.
+
 import RxSwift
 import UIKit
 
@@ -32,3 +38,8 @@ let disposeBag = DisposeBag()
 enum MyError: Error {
     case error
 }
+
+Observable<Void>.error(MyError.error)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+// result) 결과적으로 error(error) 이벤트가 전달되고 종료됩니다.
