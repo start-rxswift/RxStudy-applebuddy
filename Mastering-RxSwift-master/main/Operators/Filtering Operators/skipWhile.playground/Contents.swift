@@ -20,6 +20,9 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - skipWhile operator
+
+// - 인자로 클로저를 받으며, false를 리턴하는 동안 방출하는 요소를 무시합니다.
 import RxSwift
 import UIKit
 
@@ -29,3 +32,11 @@ import UIKit
 
 let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+// - skipWhile은 받은 클로저가 false를 리턴한 후의 요소를 전달합니다. true를 리턴하는동안 방출하는 요소는 무시합니다.
+// 홀수가 아닌 값이 들어온 후부터 요소 방출
+// 1(무시), 2(이후 전달), 3, 4. 5. 6, 7, 8, 9, 10
+Observable.from(numbers)
+    .skipWhile { !$0.isMultiple(of: 2) }
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)

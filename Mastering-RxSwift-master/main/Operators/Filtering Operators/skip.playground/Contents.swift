@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - skip operator
+
+// - 정수값을 인자로 받아 지정한 갯수만큼 무시 후 이후의 요소를 전달합니다.
+
 import RxSwift
 import UIKit
 
@@ -29,3 +33,10 @@ import UIKit
 
 let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+// .skip(5)는 처음 5개의 요소를 무시, 이후의 요소를 전달합니다.
+// -> 6, 7, 8, 9, 10
+Observable.from(numbers)
+    .skip(5)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
