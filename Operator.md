@@ -47,6 +47,11 @@ Observable.from([1,2,3,4,5,6,7,8,9])
   - repeatElement(반복 방출)
   - deferred(특정 조건에 따른 Observable 생성)
   - empty(completed 이벤트 전달 옵저버블 방출), error(error 이벤트 전달 옵저버블 방출)
+  - ignoreElements(error, completed 만 전달, next 이벤트 상관없이 결과만 확인하고 싶을때 사용)
+  - skip(정수를 받아 지정 갯수만큼 무시후의 요소 방출)
+  - skipWhile(클로져받아 true리턴하는 동안 방출되는 요소를 무시, false 이후 요소 방출)
+  - skipUntil(trigger역할의 Observable을 인자로받아, trigger 방출 전까지의 원본 옵저버블 방출 요소 무시)
+  - elementAt(정수를 인자로 받아 특정 인덱스요소만 방출)
 
 ## 연산자 종류 
 
