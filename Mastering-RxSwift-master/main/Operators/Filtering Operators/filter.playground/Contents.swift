@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - filter operator
+
+// - 특정 조건에 맞는 요소만 필터링하여 전달합니다.
+
 import RxSwift
 import UIKit
 
@@ -29,3 +33,10 @@ import UIKit
 
 let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+// from -> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+// filter { $0.isMultiple(of: 2} } -> 2, 4, 6, 8, 10
+Observable.from(numbers)
+    .filter { $0.isMultiple(of: 2) }
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
