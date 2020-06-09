@@ -20,6 +20,11 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - takeUntil operator
+
+// - trigger subject가 이벤트를 방출하기 전까지 원본 옵저버블의 이벤트를 방출합니다.
+// - trigger subject가 이벤트를 방출 한 이후에는 원본 옵저버블에서 completed이벤트를 전달하며, 이후 방출하는 이벤트는 무시됩니다.
+
 import RxSwift
 import UIKit
 
@@ -29,3 +34,19 @@ import UIKit
 
 let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+let subject = PublishSubject<Int>()
+let trigger = PublishSubject<Int>()
+
+subject.takeUntil(trigger)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// - subject에서 방출하는 1, 2는 아직 trigger subject가 이벤트를 방출하기 전이므로 구독자에게 전달됩니다.
+subject.onNext(1)
+subject.onNext(2)
+
+// - trigger subject가 next event를 방출 한 이후, completed 이벤트가 전달됩니다.
+// - 이후 원본 subject Observable에서 방출되는 이벤트는 무시됩니다.
+trigger.onNext(2)
+subject.onNext(3)

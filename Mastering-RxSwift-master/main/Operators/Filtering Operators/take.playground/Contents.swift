@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - take operator
+
+// - 특정 횟수만큼만 요소를 방출합니다.
+
 import RxSwift
 import UIKit
 
@@ -29,3 +33,11 @@ import UIKit
 
 let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+// - 처음 6개의 요소만 방출되고 이후의 요소는 무시됩니다.
+// - 이후 요소만 무시될 뿐 completed, error 이벤트가 발생 시 이 또한 정상적으로 전달됩니다.
+// ex) 1, 2, 3, 4, 5, 6
+Observable.from(numbers)
+    .take(6)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)

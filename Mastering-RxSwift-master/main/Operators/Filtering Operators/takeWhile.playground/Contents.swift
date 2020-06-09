@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - takeWhile operator
+
+// -
+
 import RxSwift
 import UIKit
 
@@ -29,3 +33,11 @@ import UIKit
 
 let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+// - 인자로 받은 클로져가 true를 리턴하는동안 요소를 방출합니다. 클로져에서 false가 리턴된 이후의 요소는 무시합니다.
+// - 이후에 받는 completed, error 이벤트는 함께 전달됩니다.
+// ex) 1...7 -> 7보다 작으므로 방출, 이후의 값 요소는 7보다 크므로 무시됩니다.
+Observable.from(numbers)
+    .takeWhile { $0 <= 7 }
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
