@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - distinctUntilChanged operator
+
+// -
+
 import RxSwift
 import UIKit
 
