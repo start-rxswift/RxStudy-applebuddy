@@ -20,6 +20,12 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - startWith operator
+
+// - 요소 방출 전에 앞부분에 옵저버블을 추가하는데 사용합니다.
+// - 주로 기본값, 시작값을 주고 시작하려 할 때 사용합니다.
+// - startWith operator는 LIFO(Last In First Out) 방식으로 작동합니다.
+
 import RxSwift
 import UIKit
 
@@ -27,5 +33,13 @@ import UIKit
  # startWith
  */
 
-let bag = DisposeBag()
+let disposeBag = DisposeBag()
 let numbers = [1, 2, 3, 4, 5]
+
+// result : -3, -1, -2, 0, 1, 2, 3, 4, 5
+Observable.from(numbers)
+    .startWith(0) // 맨 앞에 0이 추가되고,
+    .startWith(-1, -2) // -1, -2가 0 앞에 추가되고
+    .startWith(-3) // -1 앞에 -3이 추가됩니다.
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
