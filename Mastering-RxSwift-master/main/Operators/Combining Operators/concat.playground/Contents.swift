@@ -20,6 +20,10 @@
 //  THE SOFTWARE.
 //
 
+// MARK: - concat operator
+
+// - 여러 옵저버블을 연결할 때 사용하는 연산자
+
 import RxSwift
 import UIKit
 
@@ -27,6 +31,25 @@ import UIKit
  # concat
  */
 
-let bag = DisposeBag()
+let disposeBag = DisposeBag()
 let fruits = Observable.from(["🍏", "🍎", "🥝", "🍑", "🍋", "🍉"])
 let animals = Observable.from(["🐶", "🐱", "🐹", "🐼", "🐯", "🐵"])
+
+// - 타입메서드 concat 사용 예시)
+// result : 과일들이 방출 후, 동물들이 차례로 연결되어 방출됩니다.
+// - 인자값으로 전달된 모든 컬렉션을 모두 연결한 하나의 옵저버블을 만듭니다.
+Observable.concat([fruits, animals])
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// - 인스턴스메서드 concat 사용 예시)
+// result : 과일 컬렉션 + 동물 컬렉션
+// - 위의 타입메서드 사용과 동일하게 옵저버블을 방출합니다.
+fruits.concat(animals)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+
+// result : 동물 컬렉션 + 과일 컬렉션
+animals.concat(fruits)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
