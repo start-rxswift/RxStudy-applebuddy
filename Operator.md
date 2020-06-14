@@ -36,9 +36,10 @@ Observable.from([1,2,3,4,5,6,7,8,9])
 // * 단, 연산자의 실행 순서에 따라 결과가 달라질 수 있음에 주의해야 한다.
 ~~~
 
-<br><br>
+<br>
+<br>
 
-## 연산자 별 특징 요약정리
+## RxSwift 연산자 별 특징 요약정리
 - RxSwift Operator 요약 기록
   - craete(Observable 동작방식 설정)
   - just(요소그대로), of(여러요소그대로), from(배열요소차례대로)
@@ -47,11 +48,30 @@ Observable.from([1,2,3,4,5,6,7,8,9])
   - repeatElement(반복 방출)
   - deferred(특정 조건에 따른 Observable 생성)
   - empty(completed 이벤트 전달 옵저버블 방출), error(error 이벤트 전달 옵저버블 방출)
-  - ignoreElements(error, completed 만 전달, next 이벤트 상관없이 결과만 확인하고 싶을때 사용)
+  - ignoreElements(error,completed만전달, next 이벤트 상관없이 결과만 확인하고 싶을때 사용)
   - skip(정수를 받아 지정 갯수만큼 무시후의 요소 방출)
   - skipWhile(클로져받아 true리턴하는 동안 방출되는 요소를 무시, false 이후 요소 방출)
   - skipUntil(trigger역할의 Observable을 인자로받아, trigger 방출 전까지의 원본 옵저버블 방출 요소 무시)
+  - take(정수를 받아 지정 갯수만큼 요소를 방출)
+  - takeWhile(클로져를 받아 클로져가 true 리턴하는 동안 요소를 방출)
+  - takeUntil(trigger Observable의 이벤트 방출전까지 원본 Observable에서 요소를 방출)
+  - takeLast(정수를 받아 지정 갯구 만큼의 최신 요소를 저장 및 대기, completed 시 요소방출 / error 시 error만 방출)
   - elementAt(정수를 인자로 받아 특정 인덱스요소만 방출)
+  - debounce : 첫 이벤트 후 타이머 발동, 지정 주기동안 이벤트가 발생하면 타이머 초기화, 발생 없어도 타이머 초기화(실시간 검색기능)
+  - throttle : 첫 이벤트 후 지정 주기동안 이벤트 무시, latest 값에 따라 방출 이벤트 차이, (단기간의 버튼텝/델리게이트 이벤트 중복방지 처리)
+  - combineLatest : 이벤트 발생 시마다 가장 최근의 이벤트로 엮기
+  - zip : 같은 순서로 발생한 옵저버블끼리 엮기
+  - withLatestFrom : trigger, (인자)data subject -> data subject 이벤트 후 trigger 이벤트 시 data의 최신 이벤트 구독자 전달 + completed 시 data 최신이벤트 구독자 전달
+  - sample : data, (인자)trigger subject -> trigger data subject 이벤트 후 trigger 이벤트 시 단 한번 data 최신 이벤트 구독자 전달 + completed시 completed 만 구독자 전달
+  - switchLatest : 가장 최근 구독한 옵저버블이 방출하는 최신이벤트를 구독자 전달, completed는 원본 옵저버블이 받을때 구독자 전달, error는 최근 구독한 옵저버블에서 발생시에도 구독자 전달
+  - interval operator : 특정 주기 이벤트 방출, 구독 시점마다 timer 시작
+  - timer : (지연시간, 반복주기, 스케쥴러), 주기적으로 이벤트 방출
+  - timeout : (주기, other, 스케쥴러), 주기 간 이벤트 미발생 시 error, other 지정 시 other 실행 후 completed
+  - delay : 방출한 next 이벤트의 전달 시점을 지연
+  - delaySubscription : 구독 시점을 지연, 이후 next 이벤트는 지연시키지 않습니다. 
+  
+<br>
+<br>
 
 ## 연산자 종류 
 
