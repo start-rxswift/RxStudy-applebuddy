@@ -30,20 +30,20 @@ import UIKit
 /*:
  # delay
  */
-
-let bag = DisposeBag()
-
-func currentTimeString() -> String {
-    let f = DateFormatter()
-    f.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
-    return f.string(from: Date())
-}
-
-// 1초마다 정수를 방출하는 Observable을 먼저 만들겠습니다.
-// 1초마다 계속 next 이벤트를 방출하고 있습니다. 이때 원본 옵저버블(next(0))은 5초부터 방출이 되고 있습니다.
-Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
-    .take(10)
-    .debug()
-    .delay(.seconds(5), scheduler: MainScheduler.instance)
-    .subscribe { print(currentTimeString(), $0) }
-    .disposed(by: bag)
+//
+// let bag = DisposeBag()
+//
+// func currentTimeString() -> String {
+//    let f = DateFormatter()
+//    f.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+//    return f.string(from: Date())
+// }
+//
+//// 1초마다 정수를 방출하는 Observable을 먼저 만들겠습니다.
+//// 1초마다 계속 next 이벤트를 방출하고 있습니다. 이때 원본 옵저버블(next(0))은 5초부터 방출이 되고 있습니다.
+// Observable<Int>.interval(.seconds(1), scheduler: MainScheduler.instance)
+//    .take(10)
+//    .debug()
+//    .delay(.seconds(5), scheduler: MainScheduler.instance)
+//    .subscribe { print(currentTimeString(), $0) }
+//    .disposed(by: bag)

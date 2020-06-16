@@ -20,7 +20,10 @@
 //  THE SOFTWARE.
 //
 
-// MARK: catchError 연산자는 next이벤트, completed이벤트는 구독자에게 그대로 전달합니다. 반면 에러이벤트는 전달하지 않고 새로운 옵저버블이나 기본값을 전달합니다. 특히 네트워크 요청을 구현할때 많이 사용 됩니다.
+// MARK: catchError operator
+
+// - 연산자는 next이벤트, completed 이벤트는 구독자에게 그대로 전달합니다.
+// - 반면 에러이벤트는 전달하지 않고 새로운 Observable이나 기본값을 전달합니다. 다양한 연산에서 사용되며, 특히 네트워크 요청을 구현할때 많이 사용 됩니다.
 
 import RxSwift
 import UIKit
@@ -47,15 +50,17 @@ let recovery = PublishSubject<Int>()
  subject.onError(MyError.error)
  */
 
-// 여기 catchError 연산자를 추가해 보겠습니다. 이 연산자는 클로져를 파라메터로 받습니다. 에러가 발생 시 새로운 옵저버블 이나 기본값을 전달합니다.
-// catchError 클로져에서 recovery subject를 리턴합니다.
+// - subject에 catchError 연산자를 추가해 보겠습니다. 이 연산자는 클로져를 파라메터로 받습니다. 에러가 발생 시 새로운 옵저버블이나 기본값을 전달합니다.
+// - catchError 클로져에서 recovery subject를 리턴합니다.
 subject
     .catchError { _ in recovery }
     .subscribe { print($0) }
     .disposed(by: bag)
 
-subject.onError(MyError.error) // catchError 를 넣은 뒤에는 onError 연산자를 사용해도 구독자에게 error 이벤트가 전달되지 않습니다. recovery subject로 교체되었기 때문입니다.
+// - catchError 를 넣은 뒤에는 onError 연산자를 사용해도 구독자에게 error 이벤트가 전달되지 않습니다.
+// .  - recovery subject로 교체되었기 때문입니다.
+subject.onError(MyError.error)
 
-subject.onNext(11) // subject는 더이상 다른 이벤트를 전달하지 못하는 반면,
-recovery.onNext(22) // recovery subject는 새로운 이벤트를 방출 할 수 있습니다. ( next(22) )
+subject.onNext(11) // subject는 error 이벤트 이후 더이상 다른 이벤트를 전달하지 못하는 반면,
+recovery.onNext(33) // recovery subject는 새로운 이벤트를 방출 할 수 있습니다. ( next(22) )
 recovery.onCompleted() // 이 후 onCompleted() 를 실행하면 정상적으로 구독이 종료됩니다. ( completed )
