@@ -27,27 +27,54 @@
 import RxSwift
 import UIKit
 
-/*:
- # of
+/*
+ /*:
+  # of
+  */
+
+ let disposeBag = DisposeBag()
+ let apple = "🍏"
+ let orange = "🍊"
+ let kiwi = "🥝"
+
+ Observable.of(apple, orange, kiwi)
+    .subscribe { element in print(element) }
+    .disposed(by: disposeBag)
+
+ Observable.of([1, 2], [3, 4], [5, 6])
+    .subscribe { element in print(element) }
+    .disposed(by: disposeBag)
+
+ Observable.of(apple, orange, kiwi)
+    .subscribe { element in print(element) }
+    .disposed(by: disposeBag)
+
+ Observable.of([1, 2], [3, 4], [5, 6])
+    .subscribe { element in print(element) }
+    .disposed(by: disposeBag)
  */
 
-let disposeBag = DisposeBag()
-let apple = "🍏"
-let orange = "🍊"
-let kiwi = "🥝"
+let fruits = ["apple", "banana", "grape", "melon", "strawberry"]
+let melon = "melon"
 
-Observable.of(apple, orange, kiwi)
-    .subscribe { element in print(element) }
-    .disposed(by: disposeBag)
+struct CountDown: Sequence, IteratorProtocol {
+    var count: Int
 
-Observable.of([1, 2], [3, 4], [5, 6])
-    .subscribe { element in print(element) }
-    .disposed(by: disposeBag)
+    // 구조체 내의 값을 구조체 내부에서 변화시키는 경우, mutating 키워드를 사용해야 내부에서 변화시킬 수 있습니다.
+    mutating func next() -> Int? {
+        if count == 0 {
+            return nil
+        }
 
-Observable.of(apple, orange, kiwi)
-    .subscribe { element in print(element) }
-    .disposed(by: disposeBag)
+        // 해당 블록이 종료 될 때 count는 1 감소 시킵니다.
+        defer { count -= 1 }
+        return count
+    }
+}
 
-Observable.of([1, 2], [3, 4], [5, 6])
-    .subscribe { element in print(element) }
-    .disposed(by: disposeBag)
+let threeToGo = CountDown(count: 3)
+
+// result : 3, 2, 1
+for index in threeToGo {
+    print(index)
+}

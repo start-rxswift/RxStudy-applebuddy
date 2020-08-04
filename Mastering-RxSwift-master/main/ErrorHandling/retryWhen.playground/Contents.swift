@@ -20,7 +20,9 @@
 //  THE SOFTWARE.
 //
 
-// MARK: retryWhen 연산자는 retry 연산자와 달리 에러가 발생 시 trigger Observable이 방출함에 따라 재시도를 진행하며 클로져를 인자로 받습니다.
+// MARK: retryWhen operator
+
+// - 연산자는 retry 연산자와 달리 에러가 발생 시 trigger Observable이 방출함에 따라 재시도를 진행하며 클로져를 인자로 받습니다.
 
 import RxSwift
 import UIKit

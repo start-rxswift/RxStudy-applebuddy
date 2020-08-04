@@ -47,22 +47,23 @@ class DriverViewController: UIViewController {
 
         // MARK: - Driver 사용 예시)
 
-        // * Driver 사용시 bind(to:) 대신 drive 메서드를 사용한다.
-        // * asDriver, drive는 메인스레드에서 실행되는것을 보장해주므로 이외 별도의 스케쥴러 명시를 해줄 필요가 없다.
-        // * Sequence를 공유하기 때문에 불필요한 리소스 낭비를 차단해준다는 장점이 있다.
+        // 1) Driver 사용시 bind(to:) 대신 drive 메서드를 사용한다.
+        // 2) asDriver, drive는 모든 작업이 메인스레드에서 실행되는것을 보장해주므로 이외 별도의 스케쥴러 명시를 해줄 필요가 없다.
+        // 3) UI에 asDriver사용 시, Sequence를 공유하기 때문에
+        // 4) Driver 사용 시, share() 연산자가 필요없으며, 불필요한 리소스 낭비를 차단해준다는 장점이 있다.
         let result = inputField.rx.text.asDriver()
             .flatMapLatest {
                 validateText($0)
                     .asDriver(onErrorJustReturn: false)
             }
 
-        // result 값에 따라 OK or Error 의 문자열을 생성하고 Label에 바인딩한다.
+        // - result 값에 따라 OK or Error 의 문자열을 생성하고 Label에 바인딩한다.
         result
             .map { $0 ? "Ok" : "Error" }
             .drive(resultLabel.rx.text)
             .disposed(by: bag)
 
-        // result 값에 따라 빨강, 파랑색을 반환하고 이를 Label backgroundColor에 바인딩한다.
+        // - result 값에 따라 빨강, 파랑색을 반환하고 이를 Label backgroundColor에 바인딩한다.
         result
             .map { $0 ? UIColor.blue : UIColor.red }
             .drive(resultLabel.rx.backgroundColor)
@@ -77,7 +78,9 @@ class DriverViewController: UIViewController {
 
         /*
          let result = inputField.rx.text
-             .flatMapLatest { validateText($0).catchErrorJustReturn(false) } // Error이벤트가 나도 크래시가 발생하지 않도록 설정한다.
+             .flatMapLatest { validateText($0)
+                                .observeOn(MainScheduler.instance) // UI가 백그라운드 스레드에서 동작하는 잠재적 문제를 해결하기 위해 ObserveOn(MainInstance.instance)를 설정한다.
+                                .catchErrorJustReturn(false) } // Error이벤트가 나도 크래시가 발생하지 않도록 설정한다.
              .share() // share() 연산자를 사용하면 모든 구독자가 하나의 Sequence를 공유한다.
 
          // result 값에 따라 OK or Error 의 문자열을 생성하고 Label에 바인딩한다.
