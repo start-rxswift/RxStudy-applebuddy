@@ -23,10 +23,10 @@
 // MARK: - Relay
 
 // - PublishRelay는 PublishSubject를, BehaviorRelay는 BehaviorSubject를 래핑하고 있습니다.
-// - Relay의 특징은 completed, error 이벤트 없이 next이벤트만 받고 전달한다는 것 입니다.
-// - Relay는 completed, error이벤트는 전달받지도, 하지도 않습니다.
-// - 또한 구독자로부터 disposed 되기전까지 계속 이벤트를 처리합니다. 그래서 주로 UI처리에 사용도됩니다.
-// - Relay는 RxCocoa 프레임워크를 통해 제공됩니다.
+// - Relay의 특징은 completed, error 이벤트 없이 "next이벤트만 받고 전달한다는 것" 입니다.
+//   - Relay는 next 이벤트 이외에 completed, error이벤트는 전달받지도, 하지도 않습니다.
+// - 또한 구독자로부터 disposed 되기 전까지 계속 이벤트를 처리합니다. 그래서 주로 UI처리에 사용도됩니다.
+// - Relay는 RxCocoa 프레임워크를 통해 제공됩니다. (RxCocoa에서는 그 외 driver 등도 지원)
 
 import RxCocoa
 import RxSwift
@@ -39,12 +39,12 @@ import UIKit
 let disposeBag = DisposeBag()
 
 // - 먼저 PublishRelay를 만들어보겠습니다. 빈생성자로 생성하는 것은 PublishSubject와 동일합니다.
-// - Relay에 next 이벤트를 전달할때는 accept 메서드를 사용합니다.
+// - Relay에 next 이벤트를 전달할때는 onNext 메서드 대신 accept 메서드를 사용합니다.
 let prelay = PublishRelay<Int>()
 prelay.subscribe { print("1: \($0)") }
     .disposed(by: disposeBag)
 
-// 이렇게 accept를 통해 이벤트를 전달하면 구독자에게 이벤트가 전달됩니다.
+// 이렇게 onNext대신 relay에서는 accept를 사용해서 구독자에게 이벤트를 전달할 수 있습니다.
 prelay.accept(1)
 
 // - 이번에는 BehaviorRelay를 만들어봅니다. BehaviorRelay는 BehaviorSubject와 같이 초기값을 받으며 생성됩니다.
